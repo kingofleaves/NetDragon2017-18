@@ -20,4 +20,10 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  analogWrite(PIN_EN_L, 200);
+  digitalWrite(PIN_IN1_L, HIGH);
+  digitalWrite(PIN_IN2_L, LOW);
+  analogWrite(PIN_EN_R, 200);
+  digitalWrite(PIN_IN1_R, HIGH);
+  digitalWrite(PIN_IN2_R, LOW);
 }
