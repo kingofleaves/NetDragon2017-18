@@ -1,4 +1,4 @@
-from pykinect2 import PyKinectV2
+    from pykinect2 import PyKinectV2
 from pykinect2.PyKinectV2 import *
 from pykinect2 import PyKinectRuntime
 
@@ -96,27 +96,41 @@ class InfraRedRuntime(object):
             ret,thresh = cv2.threshold(img,127,255,0)
             image,contours,hierarchy = cv2.findContours(thresh, 1, 2)
             print("new frame:")
+            centroids = []
             for cntID in range(len(contours)):
                 cnt = contours[cntID]
                 if cv2.contourArea(cnt) < 3:   # TODO: Adjust size to match markers
                     continue
-                markerColor = (255, 0, 0, 255)
                 M = cv2.moments(cnt)
                 if M['m00'] != 0:
                     cx = int(M['m10']/M['m00'])
                     cy = int(M['m01']/M['m00'])
                     print(cx, cy)
-                    
-                    for i in range(-10, 10):
-                        # flipping cy and cx because of top left convention for Surface
-                        if cv2.contourArea(cnt) < 7.5:
-                            self._frame_surface.set_at((cy + i, cx), markerColor)
-                            self._frame_surface.set_at((cy, cx + i), markerColor)
-                        else:
-                            self._frame_surface.set_at((cy + i, cx + i), markerColor)
-                            self._frame_surface.set_at((cy - i, cx + i), markerColor)
+                    centroids.append( (cx, cy) )
 
-                        # TODO: Send cx, cy to robot
+            markerColor = (255, 0, 0, 255)
+            if centroids.length() == 2:
+
+                front = centroids[0] > centroids[1] ? centroids[0] : centroids[1]
+                
+                for i in range(0, 10):
+                    # flipping cy and cx because of top left convention for Surface
+                    self._frame_surface.set_at((front[1] - 10+i, front[0] - i), markerColor)
+                    self._frame_surface.set_at((front[1] - 10+i, front[0] + i), markerColor)
+                    self._frame_surface.set_at((front[1] + 10-i, front[0] - i), markerColor)
+                    self._frame_surface.set_at((front[1] + 10-i, front[0] + i), markerColor)
+                # TODO: Send cx, cy to robot
+
+   
+            for i in range(-10, 10):
+                # flipping cy and cx because of top left convention for Surface
+                self._frame_surface.set_at((cy + i, cx), markerColor)
+                self._frame_surface.set_at((cy, cx + i), markerColor)
+
+                        # for Target                           
+                        # self._frame_surface.set_at((cy + i, cx + i), markerColor)
+                        # self._frame_surface.set_at((cy - i, cx + i), markerColor)
+
                 
 
             # cv2.imshow('ImageWindow',image)
