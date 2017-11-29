@@ -1,3 +1,11 @@
+#include<SoftwareSerial.h>
+
+#define TxD 3
+#define RxD 2
+
+SoftwareSerial bluetoothSerial(TxD, RxD);
+
+char c;
 #define PIN_EN_L 11
 #define PIN_IN1_L 12
 #define PIN_IN2_L 13
@@ -17,6 +25,8 @@ long theta = 270;
 int turnCheck = 0;
 int goCheck = 0;
 void setup() {
+  bluetoothSerial.begin(9600);
+  Serial.begin(9600);
   // put your setup code here, to run once:
   pinMode(PIN_EN_L, OUTPUT);
   pinMode(PIN_IN1_L, OUTPUT);
@@ -33,6 +43,7 @@ void loop() {
 
 void motor() {
   tnow = millis();           // get current millisec counter value
+  if (bluetoothSerial.available())
   if (turnCheck == 0 && tnow-tnext >= full*theta/360) {
     analogWrite(PIN_EN_L, 0);
     digitalWrite(PIN_IN1_L, HIGH);
