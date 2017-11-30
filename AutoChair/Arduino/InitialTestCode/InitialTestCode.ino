@@ -57,10 +57,9 @@ void motor() {
   int count = 0;
   while (bluetoothSerial.peek()!= '-'){
     json[count] = bluetoothSerial.read();
-    Serial.print("");
+    Serial.print(json[count]);
     count++;
   }
-  Serial.print(json);
   Serial.print('\n');
   bluetoothSerial.read(); // get rid of "-"
     StaticJsonBuffer<200> jsonBuffer;
