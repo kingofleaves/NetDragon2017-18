@@ -133,13 +133,19 @@ class InfraRedRuntime(object):
                 elif event.type == pygame.VIDEORESIZE: # window resized
                     self._screen = pygame.display.set_mode(event.dict['size'], 
                                                 pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE, 32)
-                    
+
+                # handle MOUSEBUTTONUP
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    click = pygame.mouse.get_pos()
+                    self.target = [click[1], click[0]]
 
             # --- Getting frames and drawing  
             if self._kinect.has_new_infrared_frame():
                 frame = self._kinect.get_last_infrared_frame()
                 self.draw_infrared_frame(frame, self._frame_surface)
                 frame = None
+                self._frame_surface = pygame.transform.flip(self._frame_surface, False, True)
+
                 
             # print(self._frame_surface.get_size());
             # self._screen.blit(self._frame_surface, (0,0), (0, 20, 480, 360))
@@ -148,7 +154,7 @@ class InfraRedRuntime(object):
             frame_array = pygame.surfarray.array2d(self._frame_surface)
             #img = cv2.imdecode(frame_array, 0)
 
-            img = np.uint8(frame_array/256.)
+            img = np.uint8(frame_array/128.).clip(0, 255)
             ret,thresh = cv2.threshold(img,127,255,0)
             image,contours,hierarchy = cv2.findContours(thresh, 1, 2)
             #print("new frame:")
@@ -162,17 +168,18 @@ class InfraRedRuntime(object):
                     cx = int(M['m10']/M['m00'])
                     cy = int(M['m01']/M['m00'])
                     #print(cx, cy)
-                    centroids.append( (cx, cy) )
+                    centroids.append( ((cx, cy), cv2.contourArea(cnt)) )
 
             markerColor = (255, 0, 0, 255)
             if len(centroids) == 2:
 
-                if centroids[0] > centroids[1]:
-                    front = centroids[0]
-                    back = centroids[1]
+                # print(centroids[0][1], centroids[1][1])
+                if centroids[0][1] > centroids[1][1]:
+                    front = centroids[0][0]
+                    back = centroids[1][0]
                 else:
-                    front = centroids[1]
-                    back = centroids[0]
+                    front = centroids[1][0]
+                    back = centroids[0][0]
                 
                 for i in range(0, 10):
                     # flipping cy and cx because of top left convention for Surface
@@ -192,34 +199,38 @@ class InfraRedRuntime(object):
                 B = [(float(front[0])+float(back[0]))/2, (float(front[1])+float(back[1]))/2]
                 AB = [(B[0]-front[0]), (B[1]-front[1])]
                 BC = [(self.target[0]-B[0]), (self.target[1]-B[1])]
-                ratio = (AB[0]*BC[0]+AB[1]*BC[1])/(math.sqrt(AB[0]**2 + AB[1]**2)*math.sqrt(BC[0]**2 + BC[1]**2))
-                if abs(ratio) > 1:
-                    ratio/abs(ratio)
-                theta = math.acos(ratio)
-                print(theta)
-                if theta>0.5 or theta<-0.5:
-                    self.sock.send(b"1") ## Turn!
-                    print("Turn!")
-                elif BC[0]**2 + BC[1]**2 >100:
-                        self.sock.send(b"2") ## Forward!
-                        print("Forward!")
-                else:
+                distance = math.sqrt(AB[0]**2 + AB[1]**2)*math.sqrt(BC[0]**2 + BC[1]**2)
+                if distance > 0:
+                    ratio = (AB[0]*BC[0]+AB[1]*BC[1])/(math.sqrt(AB[0]**2 + AB[1]**2)*math.sqrt(BC[0]**2 + BC[1]**2))
+                    if abs(ratio) > 1:
+                        ratio/abs(ratio)
+                    theta = math.acos(ratio)
+                    # print(theta)
+                    if theta>0.5 or theta<-0.5:
+                        self.sock.send(b"1") ## Turn!
+                        # print("Turn!")
+                    elif BC[0]**2 + BC[1]**2 >100:
+                            self.sock.send(b"2") ## Forward!
+                            # print("Forward!")
+                    else:
+                        self.sock.send(b"0")
+                        # print("STOP!")
+                else: 
                     self.sock.send(b"0")
-                    print("STOP!")
-                    
+                    # print("STOP!")
 
+                    
             for centroid in centroids:
                 for i in range(-10, 10):
                     # flipping cy and cx because of top left convention for Surface
-                    self._frame_surface.set_at((centroid[1] + i, centroid[0]), markerColor)
-                    self._frame_surface.set_at((centroid[1], centroid[0] + i), markerColor)
+                    self._frame_surface.set_at((centroid[0][1] + i, centroid[0][0]), markerColor)
+                    self._frame_surface.set_at((centroid[0][1], centroid[0][0] + i), markerColor)
 
-                        # for Target                           
-                        # self._frame_surface.set_at((cy + i, cx + i), markerColor)
-                        # self._frame_surface.set_at((cy - i, cx + i), markerColor)
+            # Draw Target 
+            for i in range(-10, 10):
+                self._frame_surface.set_at((self.target[1] + i, self.target[0]), (0, 255, 0, 255))
+                self._frame_surface.set_at((self.target[1], self.target[0] + i), (0, 255, 0, 255))
 
-                
-            
             # cv2.imshow('ImageWindow',image)
 
             # End Analyze
@@ -230,12 +241,11 @@ class InfraRedRuntime(object):
                 
             # send delimiter "-" through bluetooth
             # self.sock.send(b"-");
-
             self._screen.blit(self._frame_surface, (0,0))
             pygame.display.update()
 
             # --- Go ahead and update the screen with what we've drawn.
-            pygame.display.flip()
+            # pygame.display.flip()
 
             # --- Limit to 60 frames per second
             self._clock.tick(60)
