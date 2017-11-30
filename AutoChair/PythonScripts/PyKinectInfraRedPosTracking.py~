@@ -9,7 +9,6 @@ import sys
 import numpy as np
 import cv2
 import bluetooth
-import simplejson as json
 
 if sys.hexversion >= 0x03000000:
     import _thread as thread
@@ -25,16 +24,6 @@ SKELETON_COLORS = [pygame.color.THECOLORS["red"],
                     pygame.color.THECOLORS["yellow"], 
                     pygame.color.THECOLORS["violet"]]
 
-class MyEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        elif isinstance(obj, np.ndarray):
-            return obj.tolist()
-        else:
-            return super(MyEncoder, self).default(obj)
 
 class InfraRedRuntime(object):
     def __init__(self):
@@ -64,47 +53,11 @@ class InfraRedRuntime(object):
 
         pygame.display.set_caption("Kinect for Windows v2 Infrared")
 
-        target_name = "HC-05"
-        target_address = None
+        serverMACAddress = '40:40:a7:bb:22:b2'
+        port = 3
+        s= bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        #s.connect((serverMACAddress, port))
 
-        while(target_address is None):
-            nearby_devices = bluetooth.discover_devices()
-            print(nearby_devices)
-
-            for bdaddr in nearby_devices:
-                print(bluetooth.lookup_name( bdaddr ))
-                if target_name == bluetooth.lookup_name( bdaddr ):
-                    target_address = bdaddr
-                    break
-            
-        if target_address is not None:
-            print("found target bluetooth device with address ", target_address)
-            self.sock=bluetooth.BluetoothSocket( bluetooth.RFCOMM )
-
-            print("Trying connection")
-
-            i=0 # ---- your port range starts here
-            maxPort = 3 # ---- your port range ends here
-            err = True
-            while err == True and i <= maxPort:
-                print("Checking Port ",i)
-                port = i
-                try:
-
-                    self.sock.connect((target_address, port))
-                    err = False
-                except Exception:
-                    ## print the exception if you like
-                    i += 1
-            if i > maxPort:
-                print("Port detection Failed.")
-                return
-
-            # print("Trying sending")
-            # self.sock.send("1 2 3")
-            # print("Finished sending")
-        else:
-            print("could not find target bluetooth device nearby")
 
     def draw_infrared_frame(self, frame, target_surface):
         if frame is None:  # some usb hub do not provide the infrared image. it works with Kinect studio though
@@ -162,12 +115,7 @@ class InfraRedRuntime(object):
             markerColor = (255, 0, 0, 255)
             if len(centroids) == 2:
 
-                if centroids[0] > centroids[1]:
-                    front = centroids[0]
-                    back = centroids[1]
-                else:
-                    front = centroids[1]
-                    back = centroids[0]
+                front = centroids[0] if centroids[0] > centroids[1] else centroids[1]
                 
                 for i in range(0, 10):
                     # flipping cy and cx because of top left convention for Surface
@@ -176,31 +124,24 @@ class InfraRedRuntime(object):
                     self._frame_surface.set_at((front[1] + 10-i, front[0] - i), markerColor)
                     self._frame_surface.set_at((front[1] + 10-i, front[0] + i), markerColor)
                 # TODO: Send cx, cy to robot
-                # print(front)
-                # print(back)
-                temp = 100
-                message = {"Front": [np.int32(front[0]), np.int32(front[1])], "Back": [np.int32(back[0]), np.int32(back[1])], "Target": [temp, temp]}
-                jsonMessage = json.dumps(message, cls=MyEncoder)
-                self.sock.send(jsonMessage)
+                text = front
+                #s.send(text)
 
-            for centroid in centroids:
-                for i in range(-10, 10):
-                    # flipping cy and cx because of top left convention for Surface
-                    self._frame_surface.set_at((centroid[1] + i, centroid[0]), markerColor)
-                    self._frame_surface.set_at((centroid[1], centroid[0] + i), markerColor)
+   
+            for i in range(-10, 10):
+                # flipping cy and cx because of top left convention for Surface
+                self._frame_surface.set_at((cy + i, cx), markerColor)
+                self._frame_surface.set_at((cy, cx + i), markerColor)
 
                         # for Target                           
                         # self._frame_surface.set_at((cy + i, cx + i), markerColor)
                         # self._frame_surface.set_at((cy - i, cx + i), markerColor)
 
                 
-            
+
             # cv2.imshow('ImageWindow',image)
 
             # End Analyze
-
-            # send delimiter "-" through bluetooth
-            self.sock.send(b"-");
             
             self._screen.blit(self._frame_surface, (0,0))
             pygame.display.update()
@@ -212,7 +153,7 @@ class InfraRedRuntime(object):
             self._clock.tick(60)
 
         # Close our Kinect sensor, close the window and quit.
-        self.sock.close()
+        #s.close()
         self._kinect.close()
         pygame.quit()
 
