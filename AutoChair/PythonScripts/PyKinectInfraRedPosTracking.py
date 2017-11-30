@@ -2,6 +2,7 @@ from pykinect2 import PyKinectV2
 from pykinect2.PyKinectV2 import *
 from pykinect2 import PyKinectRuntime
 
+import math
 import ctypes
 import _ctypes
 import pygame
@@ -62,8 +63,12 @@ class InfraRedRuntime(object):
         self._screen = pygame.display.set_mode((self._kinect.infrared_frame_desc.Width, self._kinect.infrared_frame_desc.Height), 
                                                 pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE, 32)
 
+        self.target = [100, 100]
+        self.turnCheck = False
+
         pygame.display.set_caption("Kinect for Windows v2 Infrared")
 
+## Bluetooth
         target_name = "HC-05"
         target_address = None
 
@@ -146,17 +151,17 @@ class InfraRedRuntime(object):
             img = np.uint8(frame_array/256.)
             ret,thresh = cv2.threshold(img,127,255,0)
             image,contours,hierarchy = cv2.findContours(thresh, 1, 2)
-            print("new frame:")
+            #print("new frame:")
             centroids = []
             for cntID in range(len(contours)):
                 cnt = contours[cntID]
-                if cv2.contourArea(cnt) < 3:   # TODO: Adjust size to match markers
+                if cv2.contourArea(cnt) < 5:   # TODO: Adjust size to match markers
                     continue
                 M = cv2.moments(cnt)
                 if M['m00'] != 0:
                     cx = int(M['m10']/M['m00'])
                     cy = int(M['m01']/M['m00'])
-                    print(cx, cy)
+                    #print(cx, cy)
                     centroids.append( (cx, cy) )
 
             markerColor = (255, 0, 0, 255)
@@ -178,10 +183,30 @@ class InfraRedRuntime(object):
                 # TODO: Send cx, cy to robot
                 # print(front)
                 # print(back)
-                temp = 100
-                message = {"Front": [np.int32(front[0]), np.int32(front[1])], "Back": [np.int32(back[0]), np.int32(back[1])], "Target": [temp, temp]}
-                jsonMessage = json.dumps(message, cls=MyEncoder)
-                self.sock.send(jsonMessage)
+                # temp = 100
+                # message = {"Front": [np.int32(front[0]), np.int32(front[1])], "Back": [np.int32(back[0]), np.int32(back[1])], "Target": [temp, temp]}
+                # jsonMessage = json.dumps(message, cls=MyEncoder)
+                # self.sock.send(jsonMessage)
+
+                # Calculations
+                B = [(float(front[0])+float(back[0]))/2, (float(front[1])+float(back[1]))/2]
+                AB = [(B[0]-front[0]), (B[1]-front[1])]
+                BC = [(self.target[0]-B[0]), (self.target[1]-B[1])]
+                ratio = (AB[0]*BC[0]+AB[1]*BC[1])/(math.sqrt(AB[0]**2 + AB[1]**2)*math.sqrt(BC[0]**2 + BC[1]**2))
+                if abs(ratio) > 1:
+                    ratio/abs(ratio)
+                theta = math.acos(ratio)
+                print(theta)
+                if theta>0.5 or theta<-0.5:
+                    self.sock.send(b"1") ## Turn!
+                    print("Turn!")
+                elif BC[0]**2 + BC[1]**2 >100:
+                        self.sock.send(b"2") ## Forward!
+                        print("Forward!")
+                else:
+                    self.sock.send(b"0")
+                    print("STOP!")
+                    
 
             for centroid in centroids:
                 for i in range(-10, 10):
@@ -199,9 +224,13 @@ class InfraRedRuntime(object):
 
             # End Analyze
 
+            # TODO: Get click position
+                # set as new self.target
+                # reset self.turnCheck to false
+                
             # send delimiter "-" through bluetooth
-            self.sock.send(b"-");
-            
+            # self.sock.send(b"-");
+
             self._screen.blit(self._frame_surface, (0,0))
             pygame.display.update()
 
@@ -212,6 +241,7 @@ class InfraRedRuntime(object):
             self._clock.tick(60)
 
         # Close our Kinect sensor, close the window and quit.
+        self.sock.send(b"0")
         self.sock.close()
         self._kinect.close()
         pygame.quit()
