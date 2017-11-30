@@ -23,7 +23,7 @@ int currState = STATE_STOP;
 //long twentyeight = 2000-200;
 int turnCheck = 0;
 int goCheck = 0;
-int theta = 0;
+float theta = 0;
 void setup() {
   bluetoothSerial.begin(9600);
   Serial.begin(9600);
@@ -57,21 +57,49 @@ void motor() {
   int count = 0;
   while (bluetoothSerial.peek()!= '-'){
     json[count] = bluetoothSerial.read();
-    Serial.print(json[count]);
+    Serial.print("");
     count++;
   }
+  Serial.print(json);
+  Serial.print('\n');
   bluetoothSerial.read(); // get rid of "-"
-  Serial.println(json);
     StaticJsonBuffer<200> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(json);
-    float Front[2] = {root["Front"][0], root["Front"][1]};
-    float Back[2] = {root["Back"][0], root["Back"][1]};
-    float Target[2] = {root["Target"][0], root["Target"][1]};
-    float B[2] = {(Front[0]+Back[0])/2, (Front[1]+Back[1])/2};
-    float AB[2] = {(B[0]-Front[0]), (B[1]-Front[1])};
-    float BC[2] = {(Target[0]-B[0]), (Target[1]-B[1])};
+    int Front[2];
+    Front[0] = root["Front"][0];
+    Front[1] = root["Front"][1];
+    int Back[2];
+    Back[0] = root["Back"][0];
+    Back[1] = root["Back"][1];
+    int Target[2];
+    Target[0] = root["Target"][0];
+    Target[1] = root["Target"][1];
+    float B[2];
+    B[0] = ((float)Front[0]+Back[0])/2;
+    B[1] = ((float)Front[1]+Back[1])/2;
+    float AB[2];
+    AB[0] = (B[0]-Front[0]);
+    AB[1] = (B[1]-Front[1]);
+    float BC[2];
+    BC[0] = (Target[0]-B[0]);
+    BC[1] = (Target[1]-B[1]);
     theta = acos((AB[0]*BC[0]+AB[1]*BC[1])/(abs(AB)*abs(BC)));
-    if (turnCheck == 0 && theta<5 && theta>-5) {
+    Serial.print("Front:");
+    Serial.print(Front[0]);
+    Serial.print(',');
+    Serial.print(Front[1]);
+    Serial.print('\n');
+    Serial.print("Back:");
+    Serial.print(Back[0]);
+    Serial.print(',');
+    Serial.print(Back[1]);
+    Serial.print('\n');
+    Serial.print("Target:");
+    Serial.print(Target[0]);
+    Serial.print(',');
+    Serial.print(Target[1]);
+    Serial.print('\n');
+    if (turnCheck == 0 && theta<0.5 && theta>-0.5) {
       analogWrite(PIN_EN_L, 0);
       digitalWrite(PIN_IN1_L, HIGH);
       digitalWrite(PIN_IN2_L, LOW);
@@ -80,7 +108,7 @@ void motor() {
       digitalWrite(PIN_IN2_R, HIGH);
       turnCheck = 1;
     }
-    if (turnCheck == 0 && theta>5) {
+    if (turnCheck == 0 && theta>0.5) {
       analogWrite(PIN_EN_L, 200);
       digitalWrite(PIN_IN1_L, HIGH);
       digitalWrite(PIN_IN2_L, LOW);
