@@ -144,7 +144,7 @@ class InfraRedRuntime(object):
                 frame = self._kinect.get_last_infrared_frame()
                 self.draw_infrared_frame(frame, self._frame_surface)
                 frame = None
-                self._frame_surface = pygame.transform.flip(self._frame_surface, False, True)
+                self._frame_surface = pygame.transform.flip(self._frame_surface, True, False)
 
                 
             # print(self._frame_surface.get_size());
