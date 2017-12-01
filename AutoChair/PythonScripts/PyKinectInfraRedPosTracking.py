@@ -203,7 +203,7 @@ class InfraRedRuntime(object):
                 if distance > 0:
                     ratio = (AB[0]*BC[0]+AB[1]*BC[1])/(math.sqrt(AB[0]**2 + AB[1]**2)*math.sqrt(BC[0]**2 + BC[1]**2))
                     if abs(ratio) > 1:
-                        ratio/abs(ratio)
+                        ratio = 1
                     theta = math.acos(ratio)
                     # print(theta)
                     if theta>0.5 or theta<-0.5:
