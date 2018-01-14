@@ -2,15 +2,15 @@
 
 String my_buffer;
 String currMessage;
-String previousMessage;
+String previousMessage; 
 
-long nextEvent, shortIntv, longIntv;
+long nextEvent, shortIntv, longIntv; // Time between blinks
 
 bool waitForBuffer;
 
-bool newMessage;
-bool isLit;
-int blinksLeft; // No. blinks left
+bool newMessage;  
+bool isLit; 
+int blinksLeft; // No. of blinks left
 
 void setup() {
   // put your setup code here, to run once:
@@ -37,7 +37,7 @@ void loop() {
   processMessage();
 }
 
-void processMessage() {
+void processMessage() { 
 
   if (waitForBuffer) {
     if(isBufferValid()) {
@@ -55,8 +55,9 @@ void processMessage() {
   if (nextEvent > millis()) return; // timer for our actions
 
   if (blinksLeft > 0) {
-    // blink
+    // blinking
     Serial.println("blinking...");
+    // 
     if(isLit) {
       lightLED(false);
       blinksLeft -= 1;        
