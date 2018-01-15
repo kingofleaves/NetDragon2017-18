@@ -13,7 +13,7 @@ void setup() {
   Serial.println("Potato Potahto!");
 
   // set the data rate for the SoftwareSerial port
-  mySerial.begin(4800);
+  mySerial.begin(9600);
   mySerial.println("Tomato Tomahto?");
 }
 
