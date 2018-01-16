@@ -1,19 +1,18 @@
 #define PIN_LED 2
 
 String my_buffer;
-String currMessage;
+String currMessage; 
 String previousMessage; 
 
 long nextEvent, shortIntv, longIntv; // Time between blinks
 
 bool waitForBuffer;
 
-bool newMessage;  
-bool isLit; 
+bool newMessage; // new message sent
+bool isLit; // LED on or off
 int blinksLeft; // No. of blinks left
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(PIN_LED, OUTPUT);
   my_buffer = "";
@@ -29,7 +28,6 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   if(Serial.available()) {
     my_buffer = Serial.readString();
     Serial.println(my_buffer);
@@ -52,30 +50,32 @@ void processMessage() {
     return;
   }
 
-  if (nextEvent > millis()) return; // timer for our actions
+  if (nextEvent > millis()) return; // Timer for our actions
 
-  if (blinksLeft > 0) {
-    // blinking
+  if (blinksLeft > 0) { 
+    // If still blinking
     Serial.println("blinking...");
-    // 
     if(isLit) {
+      // Done with one blink. Reduce blink counter. 
       lightLED(false);
       blinksLeft -= 1;        
       if (blinksLeft == 0) {
-        // All blinks of a digit end
+        // All blinks of a digit end, send long pause between sequences.
         nextEvent = millis() + longIntv; 
       } else {
-        // When still handling blinks
+        // While handling blinks, send small pause between digits.
         nextEvent = millis() + shortIntv;
       } 
     } else {
+      // Keep LED blinking
       lightLED(true);
       nextEvent = millis() + shortIntv;
     }
     return;
   }
 
-  // Decide whether we are at the start of a message or the start of a digit
+  // Decide whether we are at the start of a message or the start of a digit when LED is off.
+  
   if(!isLit) {
     if(newMessage) {
       // LED is off and we have a new message. Run start sequence and turn off newMessage flag.
@@ -86,31 +86,33 @@ void processMessage() {
     } else {
       // LED is off and we are in the middle of a message. Send the next digit.
       if (currMessage =="") {
-        // no more digits left to send.
+        // No more digits left to send.
         waitForBuffer = true;
         if(!isBufferValid()) {
+        // If no new message, repeat previous message.
           Serial.print("Repeating old message: ");
           Serial.println(previousMessage);
           my_buffer = previousMessage;
         }
         return;
       }
+      // If still have digits left to send, send the next digit.
       blinksLeft = nextDigit();
     }
   } else {
-    // LED is on. Turn it off.
+    // Keep LED off and send long pause.
     lightLED(false);
     nextEvent = millis() + longIntv;
   }
 
 }
 
-void lightLED(bool state) {
+void lightLED(bool state) { // LED on or off
   digitalWrite(PIN_LED, (state ? HIGH : LOW));
   isLit = state;
 }
 
-bool isBufferValid() {
+bool isBufferValid() { // Checks if the message contains only numbers
   if (my_buffer == "") return false;
   for(char i=0;i<my_buffer.length();i++)
    {
