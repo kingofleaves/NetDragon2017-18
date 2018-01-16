@@ -2,14 +2,18 @@
 
 #define ROBOTCMDLEN    6    // "MD +N "
 
-SoftwareSerial mySerial(9, 10); // RX, TX
+SoftwareSerial mySerial(10, 9); // RX, TX
 String my_buffer = "";
+bool secondMotor = false;
 
 typedef enum {
   WAIT_PROMPT, WAIT_ECHO
 } States_t;
 
 States_t state = WAIT_PROMPT;
+
+long echoStart;
+String prevMessage;
 
 void setup() {
   // Open serial communications and wait for port to open:
@@ -26,13 +30,36 @@ void loop() {
       if (checkPrompt(my_buffer)) {
         int motorSpeed1 = getMotorSpeed(1);
         int motorSpeed2 = getMotorSpeed(2);
-        sendMotorCommand(1, motorSpeed1);
-        //sendMotorCommand(2, motorSpeed2);
+        // Choose which Motor to send command to
+        secondMotor ? sendMotorCommand(2, motorSpeed2) : sendMotorCommand(1, motorSpeed1);
+        secondMotor = !secondMotor; // Switch to the other motor for the next cycle
+        
+        state = WAIT_ECHO;
+        echoStart = millis();
       }
       break;
 
     case WAIT_ECHO:
-
+      if (millis() > echoStart + 100) {
+        // Timeout. Resend command and move on worriedly.
+        mySerial.write(prevMessage.c_str());
+        state = WAIT_PROMPT;
+      }
+      checkPrompt(my_buffer);
+      if(my_buffer[0] != 'M') {
+        my_buffer.remove(0,1); // Clear out noise
+      } else {
+        // First letter is 'M'. Check if the buffer contains the message that we expect to be echoed back
+        if (my_buffer.substring(0, 8) == prevMessage) {
+          // Yay success! move on happily.
+          state = WAIT_PROMPT;
+        } else {
+          // Oops, this is noise. 
+          my_buffer.remove(0,1); // Clear out noise
+        }
+        
+      }
+        
       break;
   }
 
@@ -41,9 +68,11 @@ void loop() {
 bool checkPrompt(String buf) {
   if (mySerial.available()) {
     char recv = mySerial.read();
-    Serial.print(recv);
     if (recv == '?') return true;
     buf += String(recv);
+    Serial.println("checking buffer...");
+    Serial.println(buf);
+    Serial.println("checked buffer...");
   }
   return false;
 }
@@ -51,12 +80,39 @@ bool checkPrompt(String buf) {
 int getMotorSpeed(int motorNumber) {
   int rawForward = analogRead(0);
   int rawTurn = analogRead(1);
+  Serial.print("Raw Forward/Backward: ");
+  Serial.println(rawForward);
+  Serial.print("Raw Turn: ");
+  Serial.println(rawTurn);
   return mapInputToMotor(motorNumber, rawForward, rawTurn);
 }
 
 int mapInputToMotor(int motorNumber, int rawForward, int rawTurn) {
   // TODO: implement mapping from raw input to motor speed.
-  return (motorNumber == 1 ? 5 : -5);
+  // Subtract Offset:
+  rawForward -= 511; // how much backward
+  rawTurn -= 511; // how much to the right
+
+  int motorOutput = 0;
+  int totalPower = 0;
+  if (motorNumber == 1) {
+    // Left Motor: 
+    totalPower = rawTurn - rawForward;
+  } else {
+    // Right Motor:
+    totalPower = rawTurn - rawForward;
+  }
+  
+  int sign = 1;
+  if(totalPower < 0) {
+    sign = -1;
+    totalPower = -totalPower;
+  }
+  motorOutput = (totalPower - 26)/51;
+  if (motorOutput < 0) motorOutput = 0;
+  if (motorOutput > 9) motorOutput = 9;
+  return sign * motorOutput;
+  // return (motorNumber == 1 ? 9 : -9);
 }
 
 void sendMotorCommand(int motorNumber, int motorSpeed) {
@@ -86,6 +142,7 @@ void sendMotorCommand(int motorNumber, int motorSpeed) {
   // Send Command Through Serial
   mySerial.write(command.c_str());
   Serial.println(command.c_str());
+  prevMessage = command;
 
 }
 
