@@ -2,7 +2,7 @@
 
 #define ROBOTCMDLEN    6    // "MD +N "
 
-SoftwareSerial mySerial(10, 9); // RX, TX
+SoftwareSerial mySerial(9, 10); // RX, TX
 String my_buffer = "";
 bool secondMotor = false;
 
@@ -52,6 +52,7 @@ void loop() {
         // First letter is 'M'. Check if the buffer contains the message that we expect to be echoed back
         if (my_buffer.substring(0, 8) == prevMessage) {
           // Yay success! move on happily.
+          Serial.println("Echo Received!!");
           state = WAIT_PROMPT;
         } else {
           // Oops, this is noise. 
@@ -68,11 +69,12 @@ void loop() {
 bool checkPrompt(String buf) {
   if (mySerial.available()) {
     char recv = mySerial.read();
+    // Serial.println(recv);
     if (recv == '?') return true;
     buf += String(recv);
-    Serial.println("checking buffer...");
-    Serial.println(buf);
-    Serial.println("checked buffer...");
+    //Serial.println("checking buffer...");
+    //Serial.println(buf);
+    //Serial.println("checked buffer...");
   }
   return false;
 }
@@ -98,9 +100,10 @@ int mapInputToMotor(int motorNumber, int rawForward, int rawTurn) {
   if (motorNumber == 1) {
     // Left Motor: 
     totalPower = rawTurn - rawForward;
+    totalPower = -totalPower; //negate to account for the motor 
   } else {
     // Right Motor:
-    totalPower = rawTurn - rawForward;
+    totalPower = -rawTurn - rawForward;
   }
   
   int sign = 1;
@@ -141,6 +144,7 @@ void sendMotorCommand(int motorNumber, int motorSpeed) {
 
   // Send Command Through Serial
   mySerial.write(command.c_str());
+  Serial.print("Message sent: ");
   Serial.println(command.c_str());
   prevMessage = command;
 
