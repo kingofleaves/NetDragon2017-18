@@ -1,10 +1,10 @@
 #include<SoftwareSerial.h>
 #include "ArduinoJson-master\src\ArduinoJson.h"
 #include "ArduinoJson-master\src\ArduinoJson\StaticJsonBuffer.hpp"
-#define TxD 3
-#define RxD 2
+#define TxD 3 // RX
+#define RxD 2 // TX
 
-SoftwareSerial bluetoothSerial(TxD, RxD);
+SoftwareSerial bluetoothSerial(TxD, RxD); // RX, TX
 
 #define PIN_EN_L 11
 #define PIN_IN1_L 12
@@ -31,9 +31,9 @@ void setup() {
   Serial.begin(9600);
   pinMode(PIN_EN_L, OUTPUT);
   pinMode(PIN_IN1_L, OUTPUT);
-  pinMode(PIN_IN2_L, OUTPUT);  
+  pinMode(PIN_IN2_L, OUTPUT);
   pinMode(PIN_EN_R, OUTPUT);
-  pinMode(PIN_IN1_R, OUTPUT);  
+  pinMode(PIN_IN1_R, OUTPUT);
   pinMode(PIN_IN2_R, OUTPUT);
 }
 
@@ -43,22 +43,22 @@ void loop() {
 
 void motor() {
   int numBytes = bluetoothSerial.available();
-//  if (numBytes == 0) {
-//    analogWrite(PIN_EN_L, 0);
-//    digitalWrite(PIN_IN1_L, HIGH);
-//    digitalWrite(PIN_IN2_L, HIGH);
-//    analogWrite(PIN_EN_R, 0);
-//    digitalWrite(PIN_IN1_R, HIGH);
-//    digitalWrite(PIN_IN2_R, HIGH);
-//    return;
-//  }
-  if (bluetoothSerial.available()){
+  //  if (numBytes == 0) {
+  //    analogWrite(PIN_EN_L, 0);
+  //    digitalWrite(PIN_IN1_L, HIGH);
+  //    digitalWrite(PIN_IN2_L, HIGH);
+  //    analogWrite(PIN_EN_R, 0);
+  //    digitalWrite(PIN_IN1_R, HIGH);
+  //    digitalWrite(PIN_IN2_R, HIGH);
+  //    return;
+  //  }
+  if (bluetoothSerial.available()) {
     message = (char)bluetoothSerial.read();
   }
-  Serial.println(message);
+  // Serial.println(message);
   // State switch for turning/moving forward
   if (message == '0') {
-    Serial.println("stop");
+    // STOP!
     analogWrite(PIN_EN_L, 0);
     digitalWrite(PIN_IN1_L, LOW);
     digitalWrite(PIN_IN2_L, HIGH);
@@ -67,21 +67,39 @@ void motor() {
     digitalWrite(PIN_IN2_R, LOW);
   }
   if (message == '1') {
-    Serial.println("turn");
-    analogWrite(PIN_EN_L, MOTOR_SPEED/2);
+    // Forward
+    analogWrite(PIN_EN_L, MOTOR_SPEED);
     digitalWrite(PIN_IN1_L, LOW);
     digitalWrite(PIN_IN2_L, HIGH);
-    analogWrite(PIN_EN_R, MOTOR_SPEED/2);
+    analogWrite(PIN_EN_R, MOTOR_SPEED);
     digitalWrite(PIN_IN1_R, HIGH);
     digitalWrite(PIN_IN2_R, LOW);
   }
   if (message == '2') {
-    Serial.println("forward");
+    // Turn Right
     analogWrite(PIN_EN_L, MOTOR_SPEED);
     digitalWrite(PIN_IN1_L, HIGH);
     digitalWrite(PIN_IN2_L, LOW);
     analogWrite(PIN_EN_R, MOTOR_SPEED);
     digitalWrite(PIN_IN1_R, HIGH);
     digitalWrite(PIN_IN2_R, LOW);
+  }
+  if (message == '3') {
+    // Turn Left
+    analogWrite(PIN_EN_L, MOTOR_SPEED);
+    digitalWrite(PIN_IN1_L, LOW);
+    digitalWrite(PIN_IN2_L, HIGH);
+    analogWrite(PIN_EN_R, MOTOR_SPEED);
+    digitalWrite(PIN_IN1_R, LOW);
+    digitalWrite(PIN_IN2_R, HIGH);
+  }
+  if (message == '4') {
+    // Backward
+    analogWrite(PIN_EN_L, MOTOR_SPEED);
+    digitalWrite(PIN_IN1_L, HIGH);
+    digitalWrite(PIN_IN2_L, LOW);
+    analogWrite(PIN_EN_R, MOTOR_SPEED);
+    digitalWrite(PIN_IN1_R, LOW);
+    digitalWrite(PIN_IN2_R, HIGH);
   }
 }
