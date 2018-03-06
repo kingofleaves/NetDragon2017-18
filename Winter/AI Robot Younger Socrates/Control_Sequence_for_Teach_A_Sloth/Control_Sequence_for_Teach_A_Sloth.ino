@@ -18,12 +18,13 @@ static const int headPin = 10;
 Servo headServo;  //servo for moving jaw for speaking
 int headPos = 0;    // variable to store the servo position for speaking
 int headPosInit = 0;
-#define HEAD_DOWN 30
-#define HEAD_MID 90
-#define HEAD_UP 150
+#define HEAD_DOWN 180
+#define HEAD_MID 105
+#define HEAD_UP 30
 
 // Nodding Control 
-#define NOD_INTERVAL 500 // in ms
+#define NOD_INTERVAL 800 // in ms
+#define NOD_FLIP 300
 long lastNodTime = 0; 
 bool noddingDown = false;
 
@@ -33,9 +34,9 @@ Servo rArmServo;
 int rArmPos = 0;    // variable to store the servo position for speaking
 int rArmPosInit = 0;
 bool rArmMoving = false; // switch for whether sloth is speaking (servo)
-#define ARM_IN 0
-#define ARM_USER 90
-#define ARM_SCREEN 180
+#define ARM_IN 160
+#define ARM_FORWARD 80
+#define ARM_OUT 0
 
 // States
 bool listening = false;
@@ -86,36 +87,61 @@ void checkInput(void) {
       speaking = !speaking;
       headPos = headPosInit;
       break;
+    case 'p':
+      moveArm(ARM_OUT);
+      moveHead(HEAD_MID);
+      break;
+    case 'u':
+      moveArm(ARM_FORWARD);
+      moveHead(HEAD_MID);
+      break; 
+    case 'w':
+      wave();
+      break; 
     case 't':
-      thinking = !thinking;
+      // thinking = !thinking;
+      think();
       break; 
     case 'a':
       // debug
-      moveArm(0);
+      moveArm(ARM_OUT);
       moveHead(HEAD_UP);
       break;
     case 'b':
       // debug
-      moveArm(90);
+      moveArm(ARM_FORWARD);
       moveHead(HEAD_MID);
       break;
     case 'c':
       // debug
-      moveArm(180);
+      moveArm(ARM_IN);
       moveHead(HEAD_DOWN);
       break;
   }
 }
 
 void nod(void) {
-    if (millis() - lastNodTime < NOD_INTERVAL/2) return;
     if (noddingDown) {
-       moveHead(HEAD_UP); 
+      if (millis() - lastNodTime < NOD_FLIP) return;
+      moveHead(HEAD_UP); 
+      noddingDown = false;
     } else {
+      if (millis() - lastNodTime < NOD_INTERVAL) return;
       moveHead(HEAD_DOWN);
+      noddingDown = true;
+      lastNodTime = millis();      
     }
-    noddingDown = !noddingDown;
-    lastNodTime = millis();
+}
+
+void wave() {
+  // Temp blocking function
+  int waveDelay = 400;
+  for (int i = 0; i < 5; i++) {
+    moveArm(ARM_OUT);
+    delay(waveDelay);
+    moveArm(ARM_IN);
+    delay(waveDelay);
+  } 
 }
 
 void think(void) {
