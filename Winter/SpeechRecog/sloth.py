@@ -97,6 +97,15 @@ def connectToRobot():
 # Connect to Robot via BlueTooth
 sock = connectToRobot()
 
+# List of commands to the robot:
+# b"p" = Opens arm / signal that robot will speak
+# b"n" = Continuous nodding, keeps nodding (send this again to stop)
+# b"u" = Point to user
+# b"t" = "Thinking," Closes arm and looks down
+# b"w" = Wave arm
+# b"m" = Nods once
+
+
 # obtain audio from the microphone
 r = sr.Recognizer()
 with sr.Microphone() as source:
@@ -105,27 +114,39 @@ with sr.Microphone() as source:
     print("Say something! It may take up to 15 seconds to process, so please be patient.")
     audio = r.listen(source)
     try:
+      sock.send(b"n") #Nods as user speaks
       user_text = r.recognize_bing(audio, key=BING_KEY)
+      sock.send(b"n") #Nods as user speaks
+      sock.send(b"t") #Thinks before speaking
       # Parse user_text into substrings
       # check substring against fixed texts
       if user_text == "Hello.":
+        sock.send(b"p")
         response = "Hi! Can you help me with this question?"
-        sock.send(b"a")
+        sock.send(b"p") # point to screen
       elif user_text == "Goodbye.":
+        sock.send(b"p")
         response = "Thanks for helping me out. Goodbye!"
+        sock.send(b"w") # point to screen
         speak(response)
         raise SystemExit
       elif user_text == "Yes.":
+        sock.send(b"p")
         response = "Great! Can you show me how to cut this pizza into eight equal slices? Please say finish when you're done."
+        sock.send(b"u") # point to user
       elif user_text == "Finish.":
+        sock.send(b"p")
         response = "Thank you! That looks great."
+        sock.send(b"m") # nod once
+
         speak(response)
         raise SystemExit
       else:
+        sock.send(b"p")
         response = 'You said, "' + user_text + '"'
-        sock.send(b"n")
       speak(response)
     except sr.UnknownValueError:
+      sock.send(b"p")
       speak("Sorry, I didn't understand that.")
     except sr.RequestError as e:
       speak("Could not request results from Microsoft Bing Voice Recognition service; {0}".format(e))
