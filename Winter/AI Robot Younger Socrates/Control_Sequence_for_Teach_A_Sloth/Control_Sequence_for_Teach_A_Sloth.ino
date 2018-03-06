@@ -13,25 +13,19 @@ static const int TxD = 2;
 static const int RxD = 3;
 SoftwareSerial btSerial(TxD, RxD);
 
+// Head Control - single servo
+static const int headPin = 10;
+Servo headServo;  //servo for moving jaw for speaking
+int headPos = 0;    // variable to store the servo position for speaking
+int headPosInit = 0;
+#define HEAD_DOWN 30
+#define HEAD_MID 90
+#define HEAD_UP 150
 
-// Nodding Control - Stepper Motor 
-static const int stepsPerRevolution = 48;  // change this to fit the number of steps per Loop
-static int nodSpeed = 20;
-static const int stepsPerLoop = 8;
-static const int stepperIn1Pin = 4;
-static const int stepperIn2Pin = 5;
-static const int stepperIn3Pin = 6;
-static const int stepperIn4Pin = 7;
-Stepper nodStepper(stepsPerRevolution, stepperIn1Pin, stepperIn2Pin, stepperIn3Pin, stepperIn4Pin);
-bool isNodding = false; // switch for whether sloth is nodding (servo)
-bool nodDownwards = false;
-
-// Jaw Control - single servo
-static const int jawPin = 10;
-Servo jawServo;  //servo for moving jaw for speaking
-int jawPos = 0;    // variable to store the servo position for speaking
-int jawPosInit = 0;
-bool isSpeaking = false; // switch for whether sloth is speaking (servo)
+// Nodding Control 
+#define NOD_INTERVAL 500 // in ms
+long lastNodTime = 0; 
+bool noddingDown = false;
 
 // Arm Control - servo on left arm
 static const int rArmPin = 9;
@@ -43,24 +37,28 @@ bool rArmMoving = false; // switch for whether sloth is speaking (servo)
 #define ARM_USER 90
 #define ARM_SCREEN 180
 
+// States
+bool listening = false;
+bool thinking = false;
+bool speaking = false;
+
 
 void setup() {
   Serial.begin(9600);
   btSerial.begin(9600);
-  nodStepper.setSpeed(nodSpeed);
-  jawServo.attach(jawPin);  
+  headServo.attach(headPin);  
   rArmServo.attach(rArmPin);  
 }
 
 void loop() {
-//  if (listening) {
-//    nod();
-//  }
-//  if (thinking) {
-//    think();
-//  }
+  if (listening) {
+    nod();
+  }
+  if (thinking) {
+    think();
+  }
 //  if (speaking) {
-//    moveJaw();
+//    moveHead();
 //  }
 //  if (screen) {
 //    pointToScreen();
@@ -82,63 +80,53 @@ void checkInput(void) {
   switch (c) {
     case 'n':
       Serial.println("nod");
-      isNodding = !isNodding;
+      listening = !listening;
       break;
     case 's':
-      isSpeaking = !isSpeaking;
-      jawPos = jawPosInit;
-      moveJaw();
+      speaking = !speaking;
+      headPos = headPosInit;
       break;
     case 't':
-      // tilt head;
+      thinking = !thinking;
       break; 
     case 'a':
       // debug
       moveArm(0);
+      moveHead(HEAD_UP);
       break;
     case 'b':
       // debug
       moveArm(90);
+      moveHead(HEAD_MID);
       break;
     case 'c':
       // debug
       moveArm(180);
+      moveHead(HEAD_DOWN);
       break;
-    case 'd':
-      // debug
-      moveArm(270);
-      break;
-    case 'e':
-      // debug
-      moveArm(360);
-      break;
-    case 'z':
-      // debug
-      moveArm(450);
-      break;
-    
   }
 }
 
 void nod(void) {
-    int steps = stepsPerLoop;
-    if (nodDownwards) steps = -steps;
-    nodStepper.step(steps); // TODO: Change this blocking function to do multiple steps over multiple loops instead   
-    nodDownwards = !nodDownwards; 
+    if (millis() - lastNodTime < NOD_INTERVAL/2) return;
+    if (noddingDown) {
+       moveHead(HEAD_UP); 
+    } else {
+      moveHead(HEAD_DOWN);
+    }
+    noddingDown = !noddingDown;
+    lastNodTime = millis();
 }
 
 void think(void) {
     // Move head down 
-    
+    moveHead(HEAD_DOWN);
     // Move arm in
     moveArm(ARM_IN);
 }
 
-void moveJaw(void) {
-  if (jawPos > 360) jawPos -= 360;
-  int servoInput = (jawPos > 180 ? 360 - jawPos : jawPos);
-  jawServo.write(servoInput);              // tell servo to go to position in variable 'pos' 
-  jawPos++;
+void moveHead(int pos) {
+  headServo.write(pos);              // tell servo to go to position in variable 'pos' 
 }
 
 void moveArm(int pos) {
