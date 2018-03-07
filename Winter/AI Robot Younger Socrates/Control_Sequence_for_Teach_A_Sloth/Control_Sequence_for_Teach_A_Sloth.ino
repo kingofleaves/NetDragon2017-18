@@ -18,13 +18,13 @@ static const int headPin = 10;
 Servo headServo;  //servo for moving jaw for speaking
 int headPos = 0;    // variable to store the servo position for speaking
 int headPosInit = 0;
-#define HEAD_DOWN 180
-#define HEAD_MID 105
-#define HEAD_UP 30
+#define HEAD_CW 160
+#define HEAD_STOP 90
+#define HEAD_CCW 20
 
 // Nodding Control 
-#define NOD_INTERVAL 800 // in ms
-#define NOD_FLIP 300
+#define NOD_INTERVAL 1000 // in ms
+#define NOD_FLIP 400
 long lastNodTime = 0; 
 bool noddingDown = false;
 
@@ -49,6 +49,8 @@ void setup() {
   btSerial.begin(9600);
   headServo.attach(headPin);  
   rArmServo.attach(rArmPin);  
+  moveArm(ARM_FORWARD);
+  moveHead(HEAD_STOP);
 }
 
 void loop() {
@@ -80,8 +82,10 @@ void checkInput(void) {
   Serial.println(c);
   switch (c) {
     case 'n':
-      Serial.println("nod");
-      listening = !listening;
+      moveHead(HEAD_CW);
+      break;
+    case 'm':
+      moveHead(HEAD_STOP);
       break;
     case 's':
       speaking = !speaking;
@@ -89,11 +93,11 @@ void checkInput(void) {
       break;
     case 'p':
       moveArm(ARM_OUT);
-      moveHead(HEAD_MID);
+      moveHead(HEAD_STOP);
       break;
     case 'u':
       moveArm(ARM_FORWARD);
-      moveHead(HEAD_MID);
+      moveHead(HEAD_STOP);
       break; 
     case 'w':
       wave();
@@ -105,32 +109,24 @@ void checkInput(void) {
     case 'a':
       // debug
       moveArm(ARM_OUT);
-      moveHead(HEAD_UP);
       break;
     case 'b':
       // debug
       moveArm(ARM_FORWARD);
-      moveHead(HEAD_MID);
       break;
     case 'c':
       // debug
       moveArm(ARM_IN);
-      moveHead(HEAD_DOWN);
+      break;
+    case 'd':
+      // debug
+      moveArm(HEAD_CCW);
       break;
   }
 }
 
 void nod(void) {
-    if (noddingDown) {
-      if (millis() - lastNodTime < NOD_FLIP) return;
-      moveHead(HEAD_UP); 
-      noddingDown = false;
-    } else {
-      if (millis() - lastNodTime < NOD_INTERVAL) return;
-      moveHead(HEAD_DOWN);
-      noddingDown = true;
-      lastNodTime = millis();      
-    }
+  moveHead(HEAD_CW);
 }
 
 void wave() {
@@ -146,7 +142,7 @@ void wave() {
 
 void think(void) {
     // Move head down 
-    moveHead(HEAD_DOWN);
+//    moveHead(HEAD_DOWN);
     // Move arm in
     moveArm(ARM_IN);
 }
