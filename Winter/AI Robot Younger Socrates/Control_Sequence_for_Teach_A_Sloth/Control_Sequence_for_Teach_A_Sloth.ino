@@ -18,12 +18,13 @@ static const int headPin = 10;
 Servo headServo;  //servo for moving jaw for speaking
 int headPos = 0;    // variable to store the servo position for speaking
 int headPosInit = 0;
-#define HEAD_DOWN 30
-#define HEAD_MID 90
-#define HEAD_UP 150
+#define HEAD_CW 160
+#define HEAD_STOP 90
+#define HEAD_CCW 20
 
 // Nodding Control 
-#define NOD_INTERVAL 500 // in ms
+#define NOD_INTERVAL 1000 // in ms
+#define NOD_FLIP 400
 long lastNodTime = 0; 
 bool noddingDown = false;
 
@@ -33,9 +34,9 @@ Servo rArmServo;
 int rArmPos = 0;    // variable to store the servo position for speaking
 int rArmPosInit = 0;
 bool rArmMoving = false; // switch for whether sloth is speaking (servo)
-#define ARM_IN 0
-#define ARM_USER 90
-#define ARM_SCREEN 180
+#define ARM_IN 160
+#define ARM_FORWARD 80
+#define ARM_OUT 0
 
 // States
 bool listening = false;
@@ -48,6 +49,8 @@ void setup() {
   btSerial.begin(9600);
   headServo.attach(headPin);  
   rArmServo.attach(rArmPin);  
+  moveArm(ARM_FORWARD);
+  moveHead(HEAD_STOP);
 }
 
 void loop() {
@@ -79,48 +82,67 @@ void checkInput(void) {
   Serial.println(c);
   switch (c) {
     case 'n':
-      Serial.println("nod");
-      listening = !listening;
+      moveHead(HEAD_CW);
+      break;
+    case 'm':
+      moveHead(HEAD_STOP);
       break;
     case 's':
       speaking = !speaking;
       headPos = headPosInit;
       break;
+    case 'p':
+      moveArm(ARM_OUT);
+      moveHead(HEAD_STOP);
+      break;
+    case 'u':
+      moveArm(ARM_FORWARD);
+      moveHead(HEAD_STOP);
+      break; 
+    case 'w':
+      wave();
+      break; 
     case 't':
-      thinking = !thinking;
+      // thinking = !thinking;
+      think();
       break; 
     case 'a':
       // debug
-      moveArm(0);
-      moveHead(HEAD_UP);
+      moveArm(ARM_OUT);
       break;
     case 'b':
       // debug
-      moveArm(90);
-      moveHead(HEAD_MID);
+      moveArm(ARM_FORWARD);
       break;
     case 'c':
       // debug
-      moveArm(180);
-      moveHead(HEAD_DOWN);
+      moveArm(ARM_IN);
+      break;
+    case 'd':
+      // debug
+      moveArm(HEAD_CCW);
       break;
   }
 }
 
 void nod(void) {
-    if (millis() - lastNodTime < NOD_INTERVAL/2) return;
-    if (noddingDown) {
-       moveHead(HEAD_UP); 
-    } else {
-      moveHead(HEAD_DOWN);
-    }
-    noddingDown = !noddingDown;
-    lastNodTime = millis();
+  moveHead(HEAD_CW);
+}
+
+void wave() {
+  // Temp blocking function
+  int waveDelay = 400;
+  for (int i = 0; i < 5; i++) {
+    moveArm(ARM_OUT);
+    delay(waveDelay);
+    moveArm(ARM_IN);
+    delay(waveDelay);
+  } 
 }
 
 void think(void) {
     // Move head down 
-    moveHead(HEAD_DOWN);
+//    moveHead(HEAD_DOWN);
     // Move arm in
     moveArm(ARM_IN);
 }
