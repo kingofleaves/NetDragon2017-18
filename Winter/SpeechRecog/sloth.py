@@ -69,7 +69,7 @@ def connectToRobot():
         print("Trying connection")
 
         i=0 # ---- your port range starts here
-        maxPort = 3 # ---- your port range ends here
+        maxPort = 15 # ---- your port range ends here
         err = True
         while err == True and i <= maxPort:
           print("Checking Port ",i)
@@ -99,7 +99,9 @@ sock = connectToRobot()
 
 # List of commands to the robot:
 # b"p" = Opens arm / signal that robot will speak
-# b"n" = Continuous nodding, keeps nodding (send this again to stop)
+# b"n" = Continuous nodding, keeps nodding (send b"m" to stop)
+# b"m" = Stop nodding
+# b"l" = Nods once-ish
 # b"u" = Point to user
 # b"t" = "Thinking," Closes arm and looks down
 # b"w" = Wave arm
@@ -116,7 +118,7 @@ with sr.Microphone() as source:
     try:
       sock.send(b"n") #Nods as user speaks
       user_text = r.recognize_bing(audio, key=BING_KEY)
-      sock.send(b"n") #Nods as user speaks
+      sock.send(b"m") #Nods as user speaks
       sock.send(b"t") #Thinks before speaking
       # Parse user_text into substrings
       # check substring against fixed texts
