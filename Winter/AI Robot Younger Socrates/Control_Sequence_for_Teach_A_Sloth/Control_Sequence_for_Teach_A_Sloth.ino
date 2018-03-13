@@ -82,10 +82,13 @@ void checkInput(void) {
   Serial.println(c);
   switch (c) {
     case 'n':
-      moveHead(HEAD_CW);
+      nod();
       break;
     case 'm':
-      moveHead(HEAD_STOP);
+      stopNod();
+      break;
+    case 'l':
+      nodOnce();
       break;
     case 's':
       speaking = !speaking;
@@ -127,6 +130,16 @@ void checkInput(void) {
 
 void nod(void) {
   moveHead(HEAD_CW);
+}
+
+void stopNod() {
+  moveHead(HEAD_STOP);
+}
+
+void nodOnce(){
+  moveHead(HEAD_CW);
+  delay(500);
+  moveHead(HEAD_STOP);
 }
 
 void wave() {
