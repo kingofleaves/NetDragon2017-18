@@ -1,5 +1,8 @@
 import serial
 import struct
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+from collections import namedtuple
 
 ser1 = serial.Serial("/dev/ttyACM+PATH1", 9600, timeout = 0)
 ser2 = serial.Serial("/dev/ttyACM+PATH2", 9600, timeout = 0)
@@ -19,26 +22,47 @@ total1 = double(0.0)
 total2 = double(0.0)
 total3 = double(0.0)
 total4 = double(0.0)
+
+n_groups = 4
+totals = (total1, total2, total3, total4)
+fig, ax = plt.subplots()
+index = np.arange(n_groups)
+bar_width = 0.35
+opacity = 0.4
+error_config = {'ecolor': '0.3'}
+
 try:
-	while True:
-		response1 = ser1.read(8)
-    	response2 = ser2.read(8)
-    	response3 = ser3.read(8)
-    	response4 = ser4.read(8)
-    	# gets 8 bytes (1 double) from each of the 4 serial ports
-    	# non-blocking mode, so get a double if one has been sent, otherwise
-    	# move on to the next port
+    while True:
+        response1 = ser1.read(8)
+        response2 = ser2.read(8)
+        response3 = ser3.read(8)
+        response4 = ser4.read(8)
+        # gets 8 bytes (1 double) from each of the 4 serial ports
+        # non-blocking mode, so get a double if one has been sent, otherwise
+        # move on to the next port
 
-		total1 += struct.unpack('d', response1)
-		total2 += struct.unpack('d', response2)
-		total3 += struct.unpack('d', response3)
-		total4 += struct.unpack('d', response4)
+        total1 += struct.unpack('d', response1)
+        total2 += struct.unpack('d', response2)
+        total3 += struct.unpack('d', response3)
+        total4 += struct.unpack('d', response4)
+        # add the double value to each total
 
-		# display the contributions
-		
+        # display the contributions
+        rects1 = ax.bar(index, totals, bar_width, alpha = opacity, color = 'b', error_kw = error_config)
+
+        ax.set_xlabel('Group member')
+        ax.set_ylabel('Total time talking')
+        ax.set_title('Scores by group and gender')
+        ax.set_xticks(index + bar_width / 2)
+        ax.set_xticklabels(('A', 'B', 'C', 'D'))
+        ax.legend()
+
+        fig.tight_layout()
+        plt.show()
+
 
 except KeyboardInterrupt:
-	ser1.close()
-	ser2.close()
-	ser3.close()
-	ser4.close()
+    ser1.close()
+    ser2.close()
+    ser3.close()
+    ser4.close()
