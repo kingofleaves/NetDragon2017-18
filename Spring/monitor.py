@@ -16,6 +16,11 @@ total2 = 0.0
 total3 = 0.0
 total4 = 0.0
 
+response1 = 0.0
+response2 = 0.0
+response3 = 0.0
+response4 = 0.0
+
 n_groups = 4
 
 fig, ax = plt.subplots()
