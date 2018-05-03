@@ -18,7 +18,7 @@ void loop() {
 
     int magVal = 0; // Stores magnitude of the next normalized reading
 
-    while(millis() - lastPoll < 100) { // detects speech for 1s. 
+    while(millis() - lastPoll < 500) { // detects speech for 0.5s. 
       // Read raw value from Analog Pin to Mic
       int rawVal = analogRead(0);
       
@@ -38,7 +38,7 @@ void loop() {
   
     // Send average speaking time to RPi
     int speakTime = 0;
-    for (int i = 0; i < BUFFER_SIZE; i++) {
+    for (int i = 90; i < BUFFER_SIZE; i++) {
       speakTime += memAudio[i];
     }
     
