@@ -2,13 +2,11 @@ import serial
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
-import time
-import random
 
 ser1 = serial.Serial("/dev/ttyUSB0")
 ser2 = serial.Serial("/dev/ttyUSB1")
 ser3 = serial.Serial("/dev/ttyUSB2")
-# ser4 = serial.Serial("/dev/ttyACM3")
+ser4 = serial.Serial("/dev/ttyUSB3")
 
 # avoid divide by 0 error
 total1 = 0.00001
@@ -23,39 +21,24 @@ def add_new(ser_total, ser):
         ser_total += int(to_add)
     except:
         pass
-    print("{} adding {}".format(ser, to_add))
+    if ser == ser1:
+        print("A adding {}".format(to_add))
+    if ser == ser2:
+        print("B adding {}".format(to_add))
+    if ser == ser3:
+        print("C adding {}".format(to_add))
+    if ser == ser4:
+        print("D adding {}".format(to_add))
     return ser_total
 
 def refresh_totals(totals):
-    time1 = time.time()
-    # add the float from Arduino for each totals[], now just simulated data
-    '''
-    add1 = ser1.readline()
-    try:
-        totals[0] += int(add1)
-    except:
-        pass
-    print("A adding ")
-    print(add1)
-    '''
+    print('-' * 20)
     totals[0] = add_new(totals[0], ser1)
     totals[1] = add_new(totals[1], ser2)
     totals[2] = add_new(totals[2], ser3)
-    '''
-    add2 = ser2.readline()
-    try:
-        totals[1] += int(add2)
-    #except:
-        pass
-    print("B adding ")
-    print(add2)
-    totals[1] += random.uniform(0,2)
-    totals[2] += random.uniform(0,3)
-    totals[3] += random.uniform(0,4)
-    '''
+    totals[3] = add_new(totals[3], ser4)
     all_totals = totals[0] + totals[1] + totals[2] + totals[3]
     percentages = (totals[0] / all_totals * 100, totals[1] / all_totals * 100, totals[2] / all_totals * 100, totals[3] / all_totals * 100)
-    print('-' * 20)
     return totals, percentages
 
 def animate(frameno):
@@ -68,6 +51,7 @@ def animate(frameno):
         rect.set_height(percentages[index])
     print('CURRENT PERCENTAGES')
     print(str(percentages))
+    print('-' * 20)
     return rects
 
 N = 4
