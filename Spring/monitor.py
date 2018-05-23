@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 
-ser1 = serial.Serial("/dev/ttyUSB0")
-ser2 = serial.Serial("/dev/ttyUSB1")
-ser3 = serial.Serial("/dev/ttyUSB2")
-ser4 = serial.Serial("/dev/ttyUSB3")
+serA = serial.Serial("/dev/ttyUSB1")
+serB = serial.Serial("/dev/ttyUSB3")
+serC = serial.Serial("/dev/ttyUSB2")
+serD = serial.Serial("/dev/ttyUSB0")
 
 # avoid divide by 0 error
 total1 = 0.00001
@@ -21,22 +21,22 @@ def add_new(ser_total, ser):
         ser_total += int(to_add)
     except:
         pass
-    if ser == ser1:
+    if ser == serA:
         print("A adding {}".format(to_add))
-    if ser == ser2:
+    if ser == serB:
         print("B adding {}".format(to_add))
-    if ser == ser3:
+    if ser == serC:
         print("C adding {}".format(to_add))
-    if ser == ser4:
+    if ser == serD:
         print("D adding {}".format(to_add))
     return ser_total
 
 def refresh_totals(totals):
     print('-' * 20)
-    totals[0] = add_new(totals[0], ser1)
-    totals[1] = add_new(totals[1], ser2)
-    totals[2] = add_new(totals[2], ser3)
-    totals[3] = add_new(totals[3], ser4)
+    totals[0] = add_new(totals[0], serA)
+    totals[1] = add_new(totals[1], serB)
+    totals[2] = add_new(totals[2], serC)
+    totals[3] = add_new(totals[3], serD)
     all_totals = totals[0] + totals[1] + totals[2] + totals[3]
     percentages = (totals[0] / all_totals * 100, totals[1] / all_totals * 100, totals[2] / all_totals * 100, totals[3] / all_totals * 100)
     return totals, percentages
