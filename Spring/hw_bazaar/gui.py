@@ -1,3 +1,4 @@
+import os
 from Tkinter import *
 
 root = Tk()
@@ -8,9 +9,11 @@ def callback(event):
 
 def q(event):
     print "pressed q"
+    os.system('mpg123 -q A.mp3 &')
 
 def w(event):
     print "YOU PRESSED w"
+    os.system('mpg123 -q B.mp3 &')
 
 frame = Frame(root, width=100, height=100)
 frame.bind("q", q)
