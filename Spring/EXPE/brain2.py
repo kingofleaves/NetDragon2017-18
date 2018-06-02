@@ -12,12 +12,8 @@ class BrainControl:
         self.parent = parent
         self.mission = None
         self.image = None
-        # self.new_label = tk.Label(self.parent, image=self.image)
-        # self.old_label = None
-        self.display = tk.Canvas(self.parent)
-        self.display.create_image(0, 0, image=self.image, anchor=tk.NW, tags="IMG")
-        self.display.grid(row=0, sticky=tk.W+tk.E+tk.N+tk.S)
-        self.display.pack()
+        self.new_label = tk.Label(self.parent, image=self.image)
+        self.old_label = None
 
         ### generate the window ###
         parent.geometry("1920x1080")
@@ -38,21 +34,13 @@ class BrainControl:
         self.parent.destroy()
 
     def change_image(self, event, image):
-        # self.old_label = self.new_label
-        print event.width, event.height
-        size = (event.width, event.height)
+        self.old_label = self.new_label
         new_image = Image.open(image)
-        resized_image = new_image.resize(size, Image.ANTIALIAS)
-        self.image = ImageTk.PhotoImage(resized_image)
-        # self.new_label = tk.Label(self.parent, image=self.image)
-        # self.new_label.place(x=0, y=0)
-        # if self.old_label:
-        #     self.old_label.destroy()
-        if self.display.image:
-            self.display.delete("IMG")
-        self.display.create_image(0, 0, image=self.image, anchor=NW, tags="IMG")
-
-
+        self.image = ImageTk.PhotoImage(new_image)
+        self.new_label = tk.Label(self.parent, image=self.image)
+        self.new_label.place(x=0, y=0)
+        if self.old_label:
+            self.old_label.destroy()
         print("Current image is " + image)
 
 root = tk.Tk()
