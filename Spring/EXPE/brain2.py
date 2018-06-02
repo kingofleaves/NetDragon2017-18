@@ -21,11 +21,11 @@ class BrainControl:
 
         ### Frame and keyboard bindings ###
         self.container = tk.Frame(parent)
-        self.container.bind("1", lambda event, image="images/mission1.png" : self.change_image(event, image))
-        self.container.bind("2", lambda event, image="images/mission2.png" : self.change_image(event, image))
-        self.container.bind("3", lambda event, image="images/mission3.png" : self.change_image(event, image))
-        self.container.bind("4", lambda event, image="images/mission4.png" : self.change_image(event, image))
-        self.container.bind("5", lambda event, image="images/mission5.png" : self.change_image(event, image))
+        self.container.bind("<F1>", lambda event, image="images/mission1.png" : self.change_image(event, image))
+        self.container.bind("<F2>", lambda event, image="images/mission2.png" : self.change_image(event, image))
+        self.container.bind("<F3>", lambda event, image="images/mission3.png" : self.change_image(event, image))
+        self.container.bind("<F4>", lambda event, image="images/mission4.png" : self.change_image(event, image))
+        self.container.bind("<F5>", lambda event, image="images/mission5.png" : self.change_image(event, image))
         self.container.bind("<Escape>", self.exit)
         self.container.focus_set()
         self.container.pack()
