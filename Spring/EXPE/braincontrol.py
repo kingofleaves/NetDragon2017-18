@@ -27,19 +27,29 @@ class BrainControl:
         # fullscreen window #
         parent.geometry("1920x1080")
         parent.title("TEAMO")
+        parent.background="#dcdcdc"
 
         # topmost frame #
-        self.container = tk.Frame(self.parent)
-        self.container.pack(expand="yes", fill="both")
+        self.container = tk.Frame(self.parent, borderwidth=0, highlightthickness=0)
+        self.container.pack(expand=1, fill="both")
+        self.left = tk.Frame(self.container, width=1200, height=1080, borderwidth=0, highlightthickness=0)
+        self.left.pack(side="left", expand=0, fill="y")
+        self.right = tk.Frame(self.container, width=720, height=1080, borderwidth=0, highlightthickness=0)
+        self.right.pack(side="right", expand=0, fill="y")
+
+        # frame for hint #
+        self.hint_frame = tk.Frame(self.right, width=720, height=720, borderwidth=0, highlightthickness=0)
+        self.hint_frame.pack(side="top", expand=0, fill="both")
+        self.change_image(self.hint_frame, "images/hint1.png")
 
         # frame for TEAMO #
-        self.teamo_frame = tk.Frame(self.container, height=405, width=720, background="black")
-        self.teamo_frame.pack(side="right", expand=0, fill="none", anchor="s")
+        self.teamo_frame = tk.Frame(self.right, width=720, height=360, borderwidth=0, highlightthickness=0)
+        self.teamo_frame.pack(side="bottom", expand=0, fill="both")
         self.change_image(self.teamo_frame, "images/teamo.png")
 
         # # frame for mission #
-        self.mission_frame = tk.Frame(self.container, height=1080, width=1200, background="black")
-        self.mission_frame.pack(side="left", expand=0, fill="y")
+        self.mission_frame = tk.Frame(self.left, width=1200, height=1080, borderwidth=0, highlightthickness=0)
+        self.mission_frame.pack(expand=0, fill="both")
         self.change_image(self.mission_frame, "images/splash.png")
 
         ### keyboard bindings ###
@@ -64,7 +74,7 @@ class BrainControl:
             self.labels[frame] = []
         new_image = Image.open(image)
         self.images[frame].append(ImageTk.PhotoImage(new_image))
-        self.labels[frame].append(tk.Label(frame, image=self.images[frame][-1]))
+        self.labels[frame].append(tk.Label(frame, image=self.images[frame][-1], borderwidth=0, highlightthickness=0))
         if len(self.labels[frame]) > 1:
             self.labels[frame][-2].destroy()
         self.labels[frame][-1].pack()
