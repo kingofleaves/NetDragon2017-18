@@ -12,33 +12,42 @@ class BrainControl:
         self.parent = parent
         self.mission = None
         self.image = None
-        self.new_label = tk.Label(self.parent, image=self.image)
-        self.old_label = None
 
-        ### generate the window ###
+        ### generate the window and frames ###
+        # fullscreen window #
         parent.geometry("1920x1080")
         parent.title("TEAMO")
 
-        ### Frame and keyboard bindings ###
-        self.container = tk.Frame(parent)
-        self.container.bind("<F1>", lambda event, image="images/mission1.png" : self.change_image(event, image))
-        self.container.bind("<F2>", lambda event, image="images/mission2.png" : self.change_image(event, image))
-        self.container.bind("<F3>", lambda event, image="images/mission3.png" : self.change_image(event, image))
-        self.container.bind("<F4>", lambda event, image="images/mission4.png" : self.change_image(event, image))
-        self.container.bind("<F5>", lambda event, image="images/mission5.png" : self.change_image(event, image))
-        self.container.bind("<Escape>", self.exit)
-        self.container.focus_set()
-        self.container.pack()
+        # topmost frame #
+        self.container = tk.Frame(self.parent)
+        self.container.pack(expand=tk.YES, fill=tk.BOTH)
 
+        # frame for mission #
+        self.mission_frame = tk.Frame(self.container, width=768)
+        self.mission_frame.pack(side=tk.LEFT, expand=0, fill=tk.Y)
+        self.new_label = tk.Label(self.mission_frame, image=self.image)
+        self.old_label = None
+        self.change_image("images/splash.png")
+
+        ### keyboard bindings ###
+        self.parent.bind_all("<F1>", lambda event, image="images/mission1.png" : self.change_image(image))
+        self.parent.bind_all("<F2>", lambda event, image="images/mission2.png" : self.change_image(image))
+        self.parent.bind_all("<F3>", lambda event, image="images/mission3.png" : self.change_image(image))
+        self.parent.bind_all("<F4>", lambda event, image="images/mission4.png" : self.change_image(image))
+        self.parent.bind_all("<F5>", lambda event, image="images/mission5.png" : self.change_image(image))
+        self.parent.bind_all("<Escape>", self.exit)
+
+    ### exits the GUI ###
     def exit(self, event):
         self.parent.destroy()
 
-    def change_image(self, event, image):
+    ### changes the image displayed to the supplied filepath (use 1920x1080 images) ###
+    def change_image(self, image):
         self.old_label = self.new_label
         new_image = Image.open(image)
         self.image = ImageTk.PhotoImage(new_image)
-        self.new_label = tk.Label(self.parent, image=self.image)
-        self.new_label.place(x=0, y=0)
+        self.new_label = tk.Label(self.mission_frame, image=self.image)
+        self.new_label.pack()
         if self.old_label:
             self.old_label.destroy()
         print("Current image is " + image)
