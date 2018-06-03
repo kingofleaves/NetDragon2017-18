@@ -39,17 +39,17 @@ class BrainControl:
 
         # frame for hint #
         self.hint_frame = tk.Frame(self.right, width=720, height=720, borderwidth=0, highlightthickness=0)
-        self.hint_frame.pack(side="top", expand=0, fill="both")
+        self.hint_frame.pack(side="top", expand=0, fill="none")
         self.change_image(self.hint_frame, "images/hint1.png")
 
         # frame for TEAMO #
         self.teamo_frame = tk.Frame(self.right, width=720, height=360, borderwidth=0, highlightthickness=0)
-        self.teamo_frame.pack(side="bottom", expand=0, fill="both")
+        self.teamo_frame.pack(side="bottom", expand=0, fill="none")
         self.change_image(self.teamo_frame, "images/teamo.png")
 
         # # frame for mission #
         self.mission_frame = tk.Frame(self.left, width=1200, height=1080, borderwidth=0, highlightthickness=0)
-        self.mission_frame.pack(expand=0, fill="both")
+        self.mission_frame.pack(expand=0, fill="none")
         self.change_image(self.mission_frame, "images/splash.png")
 
         ### keyboard bindings ###
@@ -82,5 +82,6 @@ class BrainControl:
         print(str(frame) + " current image is " + image)
 
 root = tk.Tk()
+root.attributes("-fullscreen", True)
 brain = BrainControl(root)
 root.mainloop()
