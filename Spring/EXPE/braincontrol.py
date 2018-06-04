@@ -54,19 +54,37 @@ class BrainControl:
         self.change_image(self.mission_frame, "images/splash.png", None)
 
         ### keyboard bindings ###
+        # <ESC> to quit #
+        self.parent.bind_all("<Escape>", self.exit)
+
+        # <F1-5> for the different missions #
         self.parent.bind_all("<F1>", lambda event, frame=self.mission_frame, image="images/mission1.png", mission=1 : self.change_image(frame, image, mission))
         self.parent.bind_all("<F2>", lambda event, frame=self.mission_frame, image="images/mission2.png", mission=2 : self.change_image(frame, image, mission))
         self.parent.bind_all("<F3>", lambda event, frame=self.mission_frame, image="images/mission3.png", mission=3 : self.change_image(frame, image, mission))
         self.parent.bind_all("<F4>", lambda event, frame=self.mission_frame, image="images/mission4.png", mission=4 : self.change_image(frame, image, mission))
         self.parent.bind_all("<F5>", lambda event, frame=self.mission_frame, image="images/mission5.png", mission=5 : self.change_image(frame, image, mission))
+
+        # `-5 for the hints (0-5) #
         self.parent.bind_all("`", lambda event, new_hint_level=None : self.change_hint(new_hint_level))
         self.parent.bind_all("1", lambda event, new_hint_level=1 : self.change_hint(new_hint_level))
         self.parent.bind_all("2", lambda event, new_hint_level=2 : self.change_hint(new_hint_level))
-        self.parent.bind_all("<Escape>", self.exit)
+        self.parent.bind_all("3", lambda event, new_hint_level=3 : self.change_hint(new_hint_level))
+        self.parent.bind_all("4", lambda event, new_hint_level=4 : self.change_hint(new_hint_level))
+        self.parent.bind_all("5", lambda event, new_hint_level=5 : self.change_hint(new_hint_level))
 
-    ### exits the GUI ###
-    def exit(self, event):
-        self.parent.destroy()
+        # qwer for student A, B, C, D #
+        self.parent.bind_all("q", lambda event, student="A" : self.look_student(student))
+        self.parent.bind_all("w", lambda event, student="B" : self.look_student(student))
+        self.parent.bind_all("e", lambda event, student="C" : self.look_student(student))
+        self.parent.bind_all("r", lambda event, student="D" : self.look_student(student))
+
+   ############### keyboard control functions ###############
+
+    ### looks at student X and says his/her name ###
+    def look_student(self, student):
+        self.turn_to_student(student)
+        student_filename = student + '.mp3'
+        self.speak(student_filename)
 
     ### changes the image displayed to the supplied filepath ###
     def change_image(self, frame, image, mission):
@@ -89,9 +107,25 @@ class BrainControl:
             self.change_image(self.teamo_frame, "images/teamo.png", None)
             self.change_image(self.hint_frame, "images/hint-none.png", None)
         else:
-            self.change_image(self.teamo_frame, "images/teamo-hint.png", None)
-            self.change_image(self.hint_frame, "images/hint-" + str(self.mission) + "-" + str(new_hint_level) + ".png", None)
+            self.change_image(self.teamo_frame, "images/teamo-hint.png", self.mission)
+            try:
+                self.change_image(self.hint_frame, "images/hint-" + str(self.mission) + "-" + str(new_hint_level) + ".png", self.mission)
+                self.speak("sounds/hint-" + str(self.mission) + "-" + str(new_hint_level) + ".mp3")
+            except:
+                self.change_hint(None)
+                return
         self.hint = new_hint_level
+
+    ############### simple subfunctions ###############
+
+    def turn_to_student(self, student):
+        pass
+
+    def speak(self, filename):
+        os.system('mpg123 -q ' + filename + ' &')
+
+    def exit(self, event):
+        self.parent.destroy()
 
 root = tk.Tk()
 root.attributes("-fullscreen", True)
