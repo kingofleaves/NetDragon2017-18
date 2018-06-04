@@ -78,7 +78,7 @@ class BrainControl:
         self.parent.bind_all("e", lambda event, student="C" : self.look_student(student))
         self.parent.bind_all("r", lambda event, student="D" : self.look_student(student))
 
-   ############### keyboard control functions ###############
+    ############### KEYBOARD CONTROL FUNCTIONS ###############
 
     ### looks at student X and says his/her name ###
     def look_student(self, student):
@@ -116,7 +116,7 @@ class BrainControl:
                 return
         self.hint = new_hint_level
 
-    ############### simple subfunctions ###############
+    ############### SUBFUNCTIONS ###############
 
     def turn_to_student(self, student):
         pass
