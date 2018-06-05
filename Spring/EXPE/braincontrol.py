@@ -18,7 +18,7 @@ import random
 import robot_control as rc
 import serial
 
-ser = ""
+ser = serial.Serial("/dev/ttyACM0")
 
 class BrainControl:
     def __init__(self, parent):
@@ -173,7 +173,7 @@ class BrainControl:
     ############### SUBFUNCTIONS ###############
 
     def antenna_lights(self, mode):
-        ser.write(mode)
+        ser.write(mode.encode())
 
     def move_antenna(self, direction, speed):
         rc.flex(direction, speed)
