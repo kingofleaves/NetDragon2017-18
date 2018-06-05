@@ -80,10 +80,40 @@ class BrainControl:
         self.parent.bind_all("r", lambda event, student="D" : self.look_student(student))
 
         ### randomized responses ###
-        # ? for "yes" #
+        # / for "yes" #
         self.parent.bind_all("/", lambda event, filename="sounds/yes-", emotion=None, randomize_max_num=4 : self.speak_with_face(filename, emotion, randomize_max_num))
         # . for "no" #
         self.parent.bind_all(".", lambda event, filename="sounds/no-", emotion=None, randomize_max_num=4 : self.speak_with_face(filename, emotion, randomize_max_num))
+
+########################## MOVIE CONTROLS (SPECIAL) ##########################
+        self.parent.bind_all("<F9>", self.movie_received_mission)
+        self.parent.bind_all("<F10>", self.movie_hint)
+        self.parent.bind_all("<F11>", self.movie_teacher_alert)
+        self.parent.bind_all("<F12>", self.movie_solution)
+
+    def movie_received_mission(self, event):
+        self.change_image(self.mission_frame, "images/mission2.png", "movie")
+        self.change_hint(0)
+        self.speak("sounds/S3-1.mp3")
+
+    def movie_hint(self, event):
+        self.mission = "movie"
+        self.change_hint(1)
+        self.speak("sounds/S4-1.mp3")
+
+    def movie_teacher_alert(self, event):
+        self.mission = "movie"
+        self.change_hint(2)
+        self.speak("sounds/S6-2.mp3")
+
+    def movie_solution(self, event):
+        self.mission = "movie"
+        self.change_hint(3)
+        self.speak("sounds/S7-1.mp3")
+
+
+
+
 
     ############### KEYBOARD CONTROL FUNCTIONS ###############
 
@@ -132,9 +162,15 @@ class BrainControl:
         pass
 
     def change_face(self, emotion):
+        # rc.display_emot('neutral')
+        # rc.display_emot('happy')
+        # rc.display_emot('sad')
+        # rc.display_emot('questioning')
         pass
 
     def turn_to_student(self, student):
+        # rc.turn(0): turn left
+        # rc.turn(1): turn right
         pass
 
     def speak_randomizer(self, filename, max_num):
