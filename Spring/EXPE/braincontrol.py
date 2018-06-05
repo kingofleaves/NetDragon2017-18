@@ -14,6 +14,7 @@ except:
 
 from PIL import ImageTk, Image
 import os
+import random
 
 class BrainControl:
     def __init__(self, parent):
@@ -72,11 +73,17 @@ class BrainControl:
         self.parent.bind_all("4", lambda event, new_hint_level=4 : self.change_hint(new_hint_level))
         self.parent.bind_all("5", lambda event, new_hint_level=5 : self.change_hint(new_hint_level))
 
-        # qwer for student A, B, C, D #
+        # qwer for A, B, C, D names #
         self.parent.bind_all("q", lambda event, student="A" : self.look_student(student))
         self.parent.bind_all("w", lambda event, student="B" : self.look_student(student))
         self.parent.bind_all("e", lambda event, student="C" : self.look_student(student))
         self.parent.bind_all("r", lambda event, student="D" : self.look_student(student))
+
+        ### randomized responses ###
+        # ? for "yes" #
+        self.parent.bind_all("/", lambda event, filename="sounds/yes-", emotion=None, randomize_max_num=4 : self.speak_with_face(filename, emotion, randomize_max_num))
+        # . for "no" #
+        self.parent.bind_all(".", lambda event, filename="sounds/no-", emotion=None, randomize_max_num=4 : self.speak_with_face(filename, emotion, randomize_max_num))
 
     ############### KEYBOARD CONTROL FUNCTIONS ###############
 
@@ -118,8 +125,28 @@ class BrainControl:
 
     ############### SUBFUNCTIONS ###############
 
+    def antenna_lights(self, color):
+        pass
+
+    def move_antenna(self, times):
+        pass
+
+    def change_face(self, emotion):
+        pass
+
     def turn_to_student(self, student):
         pass
+
+    def speak_randomizer(self, filename, max_num):
+        num = random.randint(1, max_num)
+        self.speak(filename + str(num) + ".mp3")
+
+    def speak_with_face(self, filename, emotion, randomize_max_num):
+        self.change_face(emotion)
+        if randomize_max_num:
+            self.speak_randomizer(filename, randomize_max_num)
+        else:
+            self.speak(filename)
 
     def speak(self, filename):
         os.system('mpg123 -q ' + filename + ' &')
