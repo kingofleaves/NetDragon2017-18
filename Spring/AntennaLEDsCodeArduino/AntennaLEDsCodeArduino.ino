@@ -7,7 +7,7 @@ long lastEventTime = 0;
 int sweepCount = 0;
 
 #define OUR_RED CRGB::Red
-#define OUR_BLUE CRGB(150, 255, 255)
+#define OUR_BLUE CRGB(0, 200, 255)
 
 
 enum LEDstate { STOP, CALL_R, SWEEP_R, METER_R, CALL_B, SWEEP_B, METER_B};
