@@ -7,6 +7,8 @@ import os
 # GOOGLE_VOICE = "en-US-Wavenet-D"
 ### female voice ###
 GOOGLE_VOICE = "en-US-Wavenet-F"
+SPEED = 1.1
+PITCH = 4.5
 
 def speak(text):
   print(text)
@@ -17,8 +19,8 @@ def speak(text):
       name=GOOGLE_VOICE)
   audio_config = texttospeech.types.AudioConfig(
       audio_encoding=texttospeech.enums.AudioEncoding.MP3,
-      speaking_rate=1.1,
-      pitch=4.5)
+      speaking_rate=SPEED,
+      pitch=PITCH)
   response = client.synthesize_speech(input_text, voice, audio_config)
   with open('output.mp3', 'wb') as out:
       out.write(response.audio_content)
@@ -35,8 +37,8 @@ def type_record(filename):
       name=GOOGLE_VOICE)
   audio_config = texttospeech.types.AudioConfig(
       audio_encoding=texttospeech.enums.AudioEncoding.MP3,
-      speaking_rate=1.1,
-      pitch=6.0)
+      speaking_rate=SPEED,
+      pitch=PITCH)
   response = client.synthesize_speech(input_text, voice, audio_config)
   with open(filename, 'wb') as out:
       out.write(response.audio_content)

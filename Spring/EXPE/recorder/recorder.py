@@ -1,15 +1,32 @@
 #!/usr/bin/env python3
 import csv
 import sys
-from gtts import gTTS
+from google.cloud import texttospeech
+import os
 
-language = 'en'
+### male voice ###
+# GOOGLE_VOICE = "en-US-Wavenet-D"
+### female voice ###
+GOOGLE_VOICE = "en-US-Wavenet-F"
+SPEED = 1.1
+PITCH = 4.5
 
 def record(filename, text):
     filepath = filename + '.mp3'
     try:
-        tts = gTTS(text, language)
-        tts.save(filepath)
+        client = texttospeech.TextToSpeechClient()
+        input_text = texttospeech.types.SynthesisInput(text=text)
+        voice = texttospeech.types.VoiceSelectionParams(
+          language_code='en-US',
+          name=GOOGLE_VOICE)
+        audio_config = texttospeech.types.AudioConfig(
+          audio_encoding=texttospeech.enums.AudioEncoding.MP3,
+          speaking_rate=SPEED,
+          pitch=PITCH)
+        response = client.synthesize_speech(input_text, voice, audio_config)
+        with open(filepath, 'wb') as out:
+          out.write(response.audio_content)
+        os.system('mpg123 -q ' + filepath)
         print('Created ' + filepath + ': ' + text)
     except:
         print('Failed to create ' + filepath + ': ' + text)
