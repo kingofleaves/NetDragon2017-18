@@ -1,9 +1,9 @@
 import serial
 import sys
-import sleep
+import time
 
 if len(sys.argv) == 2:
-    ser_ant = serial.Serial(sys.argv[1])
+    ser = serial.Serial(sys.argv[1])
 
     print('1')
     ser.write('1')
