@@ -1,0 +1,242 @@
+﻿Version     0.0
+Platform    uLCD-43DT-L
+PlatRes     272x480
+Depends
+end
+Options
+    Genie
+    Speed                        9600
+    Checksum                     No
+    ResponseSize                 2
+    Multidrop                    No
+    Destination                  1
+    DestBank                     0
+    MainForm                     2
+    SndBuf                       0
+    ButtonDisable                No
+    SignedDigits                 No
+end
+Form
+    Name                         Form2
+    Alias                        Neutral
+    Bgtype                       Color
+    Color                        BLACK
+    Image                        (None)
+    Source.Height                0
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 0
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+PinInput
+    Name                         PinInput3
+    Alias                        pinQ
+    IdleState                    Low
+    Pin                          PA3
+    OnChanged                    Form3Set
+end
+PinInput
+    Name                         PinInput6
+    Alias                        pinH
+    IdleState                    Low
+    Pin                          PA1
+    OnChanged                    Form1Set
+end
+PinInput
+    Name                         PinInput7
+    Alias                        pinS
+    IdleState                    Low
+    Pin                          PA2
+    OnChanged                    Form4Set
+end
+PinInput
+    Name                         PinInput8
+    Alias                        pinN
+    IdleState                    Low
+    Pin                          PA0
+    OnChanged                    Form2Set
+end
+Image
+    Name                         Image4
+    Alias                        Image4
+    Height                       272
+    Image                        Eyes_Neutral.png
+    Left                         2
+    Source.Height                720
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 1280
+    Top                          0
+    Width                        478
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+Form
+    Name                         Form0
+    Alias                        Form0
+    Bgtype                       Color
+    Color                        WHITE
+    Image                        (None)
+    Source.Height                0
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 0
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+Video
+    Name                         Video1
+    Alias                        Video1
+    Frames.First                 0
+    Frames.Last                  5
+    Frames.FrameDelay            255
+    Height                       272
+    Left                         0
+    Source.Height                596
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 1277
+    Top                          0
+    Video                        blinkReminding1.gif
+    Width                        480
+    OnChanged                    ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+UserButton
+    Name                         Userbutton0
+    Alias                        Userbutton0
+    Height                       1
+    Images                       ''
+    Left                         475
+    Matrix                       -1
+    Momentary                    Yes
+    Stretch                      No
+    Top                          267
+    Width                        1
+    OnChanged                    Timer1Play
+end
+Timer
+    Name                         Timer1
+    Alias                        Timer1
+    Enabled                      Yes
+    Interval                     255
+    OnTimer                      Video1NextFrame
+end
+PinInput
+    Name                         PinInput0
+    Alias                        PinInput0
+    IdleState                    Low
+    Pin                          PA0
+    OnChanged                    Userbutton0Set
+end
+Form
+    Name                         Form1
+    Alias                        Happy
+    Bgtype                       Color
+    Color                        BLACK
+    Image                        (None)
+    Source.Height                0
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 0
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+Image
+    Name                         Image2
+    Alias                        Image2
+    Height                       272
+    Image                        Eyes_HappyThankful.png
+    Left                         0
+    Source.Height                720
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 1280
+    Top                          0
+    Width                        480
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+Form
+    Name                         Form3
+    Alias                        Question
+    Bgtype                       Color
+    Color                        BLACK
+    Image                        (None)
+    Source.Height                0
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 0
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+Image
+    Name                         Image0
+    Alias                        Image0
+    Height                       272
+    Image                        Eyes_Curious.png
+    Left                         0
+    Source.Height                720
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 1280
+    Top                          0
+    Width                        480
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+Form
+    Name                         Form4
+    Alias                        Sad
+    Bgtype                       Color
+    Color                        BLACK
+    Image                        (None)
+    Source.Height                0
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 0
+    OnActivate                   ''
+    OnCreate                     ''
+    OnRepeat                     ''
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
+Image
+    Name                         Image3
+    Alias                        Image3
+    Height                       272
+    Image                        Eyes_Confused.png
+    Left                         0
+    Source.Height                720
+    Source.Left                  0
+    Source.Top                   0
+    Source.Width                 1280
+    Top                          0
+    Width                        480
+    OnTouchMoving                ''
+    OnTouchPressed               ''
+    OnTouchReleased              ''
+end
