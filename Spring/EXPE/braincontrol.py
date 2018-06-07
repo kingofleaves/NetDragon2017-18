@@ -15,6 +15,7 @@ except:
 from PIL import ImageTk, Image
 import os
 import random
+import robot_control as rc
 
 class BrainControl:
     def __init__(self, parent):
@@ -85,35 +86,48 @@ class BrainControl:
         # . for "no" #
         self.parent.bind_all(".", lambda event, filename="sounds/no-", emotion=None, randomize_max_num=4 : self.speak_with_face(filename, emotion, randomize_max_num))
 
+        ### testing robot ###
+        self.parent.bind_all("7", lambda event, emotion='neutral' : self.change_face(emotion))
+        self.parent.bind_all("8", lambda event, emotion='happy' : self.change_face(emotion))
+        self.parent.bind_all("9", lambda event, emotion='sad' : self.change_face(emotion))
+        self.parent.bind_all("0", lambda event, emotion='questioning' : self.change_face(emotion))
+        self.parent.bind_all("u", lambda event, direction=0 : self.turn_robot(direction))
+        self.parent.bind_all("i", lambda event, direction=1 : self.turn_robot(direction))
+        self.parent.bind_all("j", lambda event, mode='1' : self.antenna_lights(mode))
+        self.parent.bind_all("k", lambda event, mode='2' : self.antenna_lights(mode))
+        self.parent.bind_all("l", lambda event, mode='3' : self.antenna_lights(mode))
+        self.parent.bind_all(";", lambda event, mode='0' : self.antenna_lights(mode))
+        self.parent.bind_all("o", lambda event, direction=1, speed='fast' : self.move_antenna(direction, speed))
+        self.parent.bind_all("p", lambda event, direction=0, speed='fast' : self.move_antenna(direction, speed))
+        self.parent.bind_all("[", lambda event, direction=1, speed='slow' : self.move_antenna(direction, speed))
+        self.parent.bind_all("]", lambda event, direction=1, speed='slow' : self.move_antenna(direction, speed))
+        self.parent.bind_all("'", lambda event, speed='medium', times=3 : self.loop_antenna(speed, times))
+
 ########################## MOVIE CONTROLS (SPECIAL) ##########################
-        self.parent.bind_all("<F9>", self.movie_received_mission)
-        self.parent.bind_all("<F10>", self.movie_hint)
-        self.parent.bind_all("<F11>", self.movie_teacher_alert)
-        self.parent.bind_all("<F12>", self.movie_solution)
+    #     self.parent.bind_all("<F9>", self.movie_received_mission)
+    #     self.parent.bind_all("<F10>", self.movie_hint)
+    #     self.parent.bind_all("<F11>", self.movie_teacher_alert)
+    #     self.parent.bind_all("<F12>", self.movie_solution)
 
-    def movie_received_mission(self, event):
-        self.change_image(self.mission_frame, "images/mission2.png", "movie")
-        self.change_hint(0)
-        self.speak("sounds/S3-1.mp3")
+    # def movie_received_mission(self, event):
+    #     self.change_image(self.mission_frame, "images/mission2.png", "movie")
+    #     self.change_hint(0)
+    #     self.speak("sounds/S3-1.mp3")
 
-    def movie_hint(self, event):
-        self.mission = "movie"
-        self.change_hint(1)
-        self.speak("sounds/S4-1.mp3")
+    # def movie_hint(self, event):
+    #     self.mission = "movie"
+    #     self.change_hint(1)
+    #     self.speak("sounds/S4-1.mp3")
 
-    def movie_teacher_alert(self, event):
-        self.mission = "movie"
-        self.change_hint(2)
-        self.speak("sounds/S6-2.mp3")
+    # def movie_teacher_alert(self, event):
+    #     self.mission = "movie"
+    #     self.change_hint(2)
+    #     self.speak("sounds/S6-2.mp3")
 
-    def movie_solution(self, event):
-        self.mission = "movie"
-        self.change_hint(3)
-        self.speak("sounds/S7-1.mp3")
-
-
-
-
+    # def movie_solution(self, event):
+    #     self.mission = "movie"
+    #     self.change_hint(3)
+    #     self.speak("sounds/S7-1.mp3")
 
     ############### KEYBOARD CONTROL FUNCTIONS ###############
 
@@ -155,23 +169,29 @@ class BrainControl:
 
     ############### SUBFUNCTIONS ###############
 
-    def antenna_lights(self, color):
-        pass
+    def antenna_lights(self, mode):
+        rc.LED(mode)
 
-    def move_antenna(self, times):
-        pass
+    def move_antenna(self, direction, speed):
+        rc.flex(direction, speed)
+
+    def loop_antenna(self, speed, times):
+        rc.fullFlex(speed, times)
 
     def change_face(self, emotion):
+        rc.display_emot(emotion)
         # rc.display_emot('neutral')
         # rc.display_emot('happy')
         # rc.display_emot('sad')
         # rc.display_emot('questioning')
-        pass
 
     def turn_to_student(self, student):
         # rc.turn(0): turn left
         # rc.turn(1): turn right
         pass
+
+    def turn_robot(self, direction):
+        rc.turn(direction)
 
     def speak_randomizer(self, filename, max_num):
         num = random.randint(1, max_num)
