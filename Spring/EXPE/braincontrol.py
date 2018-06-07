@@ -28,7 +28,7 @@ class BrainControl:
         self.hint = None
         self.images = {}
         self.labels = {}
-        self.curr_pos = 0
+        self.current_pos = 0
 
         ### generate the window and frames ###
         # fullscreen window #
