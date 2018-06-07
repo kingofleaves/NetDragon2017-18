@@ -89,8 +89,8 @@ class BrainControl:
         ### testing robot ###
         self.parent.bind_all("7", lambda event, emotion='neutral' : self.change_face(emotion))
         self.parent.bind_all("8", lambda event, emotion='happy' : self.change_face(emotion))
-        self.parent.bind_all("9", lambda event, emotion='sad' : self.change_face(emotion))
-        self.parent.bind_all("0", lambda event, emotion='questioning' : self.change_face(emotion))
+        self.parent.bind_all("9", lambda event, emotion='confused' : self.change_face(emotion))
+        self.parent.bind_all("0", lambda event, emotion='curious' : self.change_face(emotion))
         self.parent.bind_all("u", lambda event, direction=0 : self.turn_robot(direction))
         self.parent.bind_all("i", lambda event, direction=1 : self.turn_robot(direction))
         self.parent.bind_all("j", lambda event, mode='1' : self.antenna_lights(mode))
@@ -101,7 +101,7 @@ class BrainControl:
         self.parent.bind_all("p", lambda event, direction=0, speed='fast' : self.move_antenna(direction, speed))
         self.parent.bind_all("[", lambda event, direction=1, speed='slow' : self.move_antenna(direction, speed))
         self.parent.bind_all("]", lambda event, direction=1, speed='slow' : self.move_antenna(direction, speed))
-        self.parent.bind_all("'", lambda event, speed='medium', times=3 : self.loop_antenna(speed, times))
+        self.parent.bind_all("'", lambda event, speed='med', times=3 : self.loop_antenna(speed, times))
 
 ########################## MOVIE CONTROLS (SPECIAL) ##########################
     #     self.parent.bind_all("<F9>", self.movie_received_mission)
@@ -182,8 +182,8 @@ class BrainControl:
         rc.display_emot(emotion)
         # rc.display_emot('neutral')
         # rc.display_emot('happy')
-        # rc.display_emot('sad')
-        # rc.display_emot('questioning')
+        # rc.display_emot('confused')
+        # rc.display_emot('curious')
 
     def turn_to_student(self, student):
         # rc.turn(0): turn left
