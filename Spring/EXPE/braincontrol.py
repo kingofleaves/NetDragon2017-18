@@ -154,7 +154,7 @@ class BrainControl:
 
     def introduce_mission(self, mission):
         self.speak_with_face("sounds/mission" + str(mission) + "-0.mp3", 'happy', None)
-        self.change_image(self.mission_frame, "images/mission" + str(mission) + "2.png", mission)
+        self.change_image(self.mission_frame, "images/mission" + str(mission) + ".png", mission)
         self.speak_with_face("sounds/mission" + str(mission) + "-1.mp3", 'confused', None)
 
     ### looks at student X and says his/her name ###
@@ -227,7 +227,7 @@ class BrainControl:
     def intro_student(self, student):
         self.turn_to_student(student)
         self.antenna_lights('3')
-        self.loop_antenna('high', 1)
+        self.loop_antenna('fast', 1)
         self.speak_with_face("sounds/intro", 'happy', 3)
         self.speak(student + ".mp3")
         self.antenna_lights('0')
