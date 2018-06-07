@@ -156,7 +156,7 @@ class BrainControl:
     def introduce_mission(self, mission):
         self.speak_with_face("sounds/mission" + str(mission) + "-0.mp3", 'happy', None)
         self.change_image(self.mission_frame, "images/mission" + str(mission) + ".png", mission)
-        time.sleep(1)
+        time.sleep(12)
         self.speak_with_face("sounds/mission" + str(mission) + "-1.mp3", 'confused', None)
 
     ### looks at student X and says his/her name ###
@@ -199,13 +199,13 @@ class BrainControl:
         self.hint = new_hint_level
 
     def call_teacher(self):
-        self.speak_with_face("sounds/callteacher.mp3", confused, None)
+        self.speak_with_face("sounds/callteacher.mp3", 'confused', None)
 
     def teacher_alert(self):
-        self.speak_with_face("sounds/teacheralert1.mp3", neutral, None)
+        self.speak_with_face("sounds/teacheralert1.mp3", 'neutral', None)
         self.change_image(self.teamo_frame, "images/teamo.png", self.mission)
         self.change_image(self.hint_frame, "images/teacher-alert.png", self.mission)
-        self.speak_with_face("sounds/teacheralert2.mp3", confused, None)
+        self.speak_with_face("sounds/teacheralert2.mp3", 'confused', None)
         self.antenna_lights(2)
 
     def turn_to_student(self, student):
