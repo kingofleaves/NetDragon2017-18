@@ -264,11 +264,11 @@ class BrainControl:
         rc.display_emot(emotion)
         if emotion == 'happy':
             self.antenna_lights('3')
-            self.loop_antenna('high', 1)
+            self.loop_antenna('fast', 1)
         elif emotion == 'confused':
             self.antenna_lights('1')
             self.move_antenna(1, 'low')
-            self.move_antenna(0, 'medium')
+            self.move_antenna(0, 'med')
         elif emotion == 'curious':
             self.antenna_lights('2')
             self.loop_antenna('med', 1)
