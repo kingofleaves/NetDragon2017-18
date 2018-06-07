@@ -13,10 +13,10 @@ import matplotlib.animation as animation
 import numpy as np
 
 # adjust the filepaths as needed
-serA = serial.Serial("/dev/ttyUSB1")
-serB = serial.Serial("/dev/ttyUSB3")
-serC = serial.Serial("/dev/ttyUSB2")
-serD = serial.Serial("/dev/ttyUSB0")
+serA = serial.Serial("/dev/ttyUSB0")
+serB = serial.Serial("/dev/ttyUSB2")
+serC = serial.Serial("/dev/ttyUSB1")
+serD = serial.Serial("/dev/ttyUSB3")
 
 # avoid divide by 0 error
 total1 = 0.00001
