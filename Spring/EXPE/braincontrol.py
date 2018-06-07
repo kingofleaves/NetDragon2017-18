@@ -17,6 +17,7 @@ import os
 import random
 import robot_control as rc
 import serial
+import time
 
 ser = serial.Serial("/dev/ttyACM0")
 
@@ -108,20 +109,20 @@ class BrainControl:
         # . for "no" #
         self.parent.bind_all(".", lambda event, filename="sounds/no-", emotion=None, randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
 
-        ### testing robot ###
-        self.parent.bind_all("7", lambda event, emotion='neutral' : self.change_face(emotion))
-        self.parent.bind_all("8", lambda event, emotion='happy' : self.change_face(emotion))
-        self.parent.bind_all("9", lambda event, emotion='confused' : self.change_face(emotion))
-        self.parent.bind_all("0", lambda event, emotion='curious' : self.change_face(emotion))
-        self.parent.bind_all("j", lambda event, mode='1' : self.antenna_lights(mode))
-        self.parent.bind_all("k", lambda event, mode='2' : self.antenna_lights(mode))
-        self.parent.bind_all("l", lambda event, mode='3' : self.antenna_lights(mode))
-        self.parent.bind_all(";", lambda event, mode='0' : self.antenna_lights(mode))
-        self.parent.bind_all("o", lambda event, direction=1, speed='fast' : self.move_antenna(direction, speed))
-        self.parent.bind_all("p", lambda event, direction=0, speed='fast' : self.move_antenna(direction, speed))
-        self.parent.bind_all("[", lambda event, direction=1, speed='slow' : self.move_antenna(direction, speed))
-        self.parent.bind_all("]", lambda event, direction=0, speed='slow' : self.move_antenna(direction, speed))
-        self.parent.bind_all("'", lambda event, speed='med', times=3 : self.loop_antenna(speed, times))
+        # ### testing robot ###
+        # self.parent.bind_all("7", lambda event, emotion='neutral' : self.change_face(emotion))
+        # self.parent.bind_all("8", lambda event, emotion='happy' : self.change_face(emotion))
+        # self.parent.bind_all("9", lambda event, emotion='confused' : self.change_face(emotion))
+        # self.parent.bind_all("0", lambda event, emotion='curious' : self.change_face(emotion))
+        # self.parent.bind_all("j", lambda event, mode='1' : self.antenna_lights(mode))
+        # self.parent.bind_all("k", lambda event, mode='2' : self.antenna_lights(mode))
+        # self.parent.bind_all("l", lambda event, mode='3' : self.antenna_lights(mode))
+        # self.parent.bind_all(";", lambda event, mode='0' : self.antenna_lights(mode))
+        # self.parent.bind_all("o", lambda event, direction=1, speed='fast' : self.move_antenna(direction, speed))
+        # self.parent.bind_all("p", lambda event, direction=0, speed='fast' : self.move_antenna(direction, speed))
+        # self.parent.bind_all("[", lambda event, direction=1, speed='slow' : self.move_antenna(direction, speed))
+        # self.parent.bind_all("]", lambda event, direction=0, speed='slow' : self.move_antenna(direction, speed))
+        # self.parent.bind_all("'", lambda event, speed='med', times=3 : self.loop_antenna(speed, times))
 
 ########################## MOVIE CONTROLS (SPECIAL) ##########################
     #     self.parent.bind_all("<F9>", self.movie_received_mission)
@@ -155,6 +156,7 @@ class BrainControl:
     def introduce_mission(self, mission):
         self.speak_with_face("sounds/mission" + str(mission) + "-0.mp3", 'happy', None)
         self.change_image(self.mission_frame, "images/mission" + str(mission) + ".png", mission)
+        time.sleep(1)
         self.speak_with_face("sounds/mission" + str(mission) + "-1.mp3", 'confused', None)
 
     ### looks at student X and says his/her name ###
@@ -195,6 +197,9 @@ class BrainControl:
                 self.change_hint(None)
                 return
         self.hint = new_hint_level
+
+    def call_teacher(self):
+        self.speak_with_face("sounds/callteacher.mp3", confused, None)
 
     def teacher_alert(self):
         self.speak_with_face("sounds/teacheralert1.mp3", neutral, None)
@@ -290,6 +295,7 @@ class BrainControl:
         os.system('mpg123 -q ' + filename)
 
     def exit(self, event):
+        self.change_face('neutral')
         self.turn_to_student('center')
         self.parent.destroy()
 
