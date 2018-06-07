@@ -155,10 +155,6 @@ class BrainControl:
 
     def introduce_mission(self, mission):
         self.change_image(self.mission_frame, "images/mission" + str(mission) + ".png", mission)
-        flag = False
-        while not flag:
-            time.sleep(0.5)
-            flag = True
         self.speak_with_face("sounds/mission" + str(mission) + "-0.mp3", 'happy', None)
         self.speak_with_face("sounds/mission" + str(mission) + "-1.mp3", 'confused', None)
 
@@ -210,7 +206,12 @@ class BrainControl:
         self.change_image(self.teamo_frame, "images/teamo.png", self.mission)
         self.change_image(self.hint_frame, "images/teacher-alert.png", self.mission)
         self.speak_with_face("sounds/teacheralert2.mp3", 'confused', None)
-        self.antenna_lights('2')
+        time.sleep(1)
+        self.speak_with_face("sounds/teacheralert2.mp3", 'confused', None)
+        time.sleep(1)
+        self.speak_with_face("sounds/teacheralert2.mp3", 'confused', None)
+        time.sleep(1)
+        self.antenna_lights('0')
 
     def turn_to_student(self, student):
         positions = {}
