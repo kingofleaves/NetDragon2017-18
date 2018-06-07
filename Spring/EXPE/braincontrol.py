@@ -89,6 +89,12 @@ class BrainControl:
         self.parent.bind_all("e", lambda event, student="C" : self.look_student(student))
         self.parent.bind_all("r", lambda event, student="D" : self.look_student(student))
 
+        # asdf says A, B, C, D name #
+        self.parent.bind_all("a", lambda event, filename="A.mp3" : self.speak(filename))
+        self.parent.bind_all("s", lambda event, filename="B.mp3" : self.speak(filename))
+        self.parent.bind_all("d", lambda event, filename="C.mp3" : self.speak(filename))
+        self.parent.bind_all("f", lambda event, filename="D.mp3" : self.speak(filename))
+
         # <Tab> turns to center #
         self.parent.bind_all("<Tab>", lambda event, student="center" : self.turn_to_student(student))
 
@@ -104,13 +110,22 @@ class BrainControl:
         self.parent.bind_all("<F12>", lambda event, student="D" : self.intro_student(student))
 
         ### randomized responses ###
-        # , for asking for help #
-        self.parent.bind_all(",", lambda event, filename="sounds/ask-", emotion='happy', randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
+        # , for (S ->) asking for help #
+        self.parent.bind_all(",", lambda event, filename="sounds/ask-", emotion='confused', randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
 
-        # / for "yes" #
-        self.parent.bind_all("/", lambda event, filename="sounds/yes-", randomize_max_num=7 : self.speak_randomizer(filename, randomize_max_num))
-        # . for "no" #
-        self.parent.bind_all(".", lambda event, filename="sounds/no-", randomize_max_num=3 : self.speak_randomizer(filename, randomize_max_num))
+        # / for (S ->) "yes" #
+        self.parent.bind_all("/", lambda event, filename="sounds/yes-", emotion='happy', randomize_max_num=7 : self.speak_with_face(filename, emotion, randomize_max_num))
+        # . for (S ->) "no" #
+        self.parent.bind_all(".", lambda event, filename="sounds/no-", emotion='neutral', randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
+
+        # l for S -> "great job" #
+        self.parent.bind_all("l", lambda event, filename="sounds/great-", emotion='happy', randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
+
+        # ; for S -> "explain" -> S #
+        self.parent.bind_all(";", lambda event, filename="sounds/explainto-", emotion='neutral', randomize_max_num=2 : self.speak_with_face(filename, emotion, randomize_max_num))
+
+        # ' for S -> "ask" -> S
+        self.parent.bind_all("'", lambda event, filename="sounds/askto-", emotion='neutral', randomize_max_num=2 : self.speak_with_face(filename, emotion, randomize_max_num))
 
         # ### testing robot ###
         # self.parent.bind_all("7", lambda event, emotion='neutral' : self.change_face(emotion))
