@@ -83,6 +83,7 @@ class BrainControl:
         self.parent.bind_all("w", lambda event, student="B" : self.look_student(student))
         self.parent.bind_all("e", lambda event, student="C" : self.look_student(student))
         self.parent.bind_all("r", lambda event, student="D" : self.look_student(student))
+        self.parent.bind_all("<Tab>", lambda event, student="center" : self.turn_to_student(student))
 
         ### randomized responses ###
         # / for "yes" #
@@ -195,6 +196,7 @@ class BrainControl:
         positions['B'] = -1
         positions['C'] = 1
         positions['D'] = 2
+        positions['center'] = 0
         to_change = self.current_pos - positions[student]
         while to_change > 0:
             self.turn_left()
@@ -202,6 +204,12 @@ class BrainControl:
         while to_change < 0:
             self.turn_right()
             to_change = self.current_pos - positions[student]
+
+    def turn_right_helper(self, event):
+        self.turn_right()
+
+    def turn_left_helper(self, event):
+        self.turn_left()
 
     def turn_right(self):
         rc.turn(1)
