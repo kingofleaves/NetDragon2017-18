@@ -105,9 +105,9 @@ class BrainControl:
 
         ### randomized responses ###
         # / for "yes" #
-        self.parent.bind_all("/", lambda event, filename="sounds/yes-", emotion=None, randomize_max_num=7 : self.speak_with_face(filename, emotion, randomize_max_num))
+        self.parent.bind_all("/", lambda event, filename="sounds/yes-", randomize_max_num=7 : self.speak_randomizer(filename, randomize_max_num))
         # . for "no" #
-        self.parent.bind_all(".", lambda event, filename="sounds/no-", emotion=None, randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
+        self.parent.bind_all(".", lambda event, filename="sounds/no-", randomize_max_num=3 : self.speak_randomizer(filename, randomize_max_num))
 
         # ### testing robot ###
         # self.parent.bind_all("7", lambda event, emotion='neutral' : self.change_face(emotion))
@@ -154,9 +154,9 @@ class BrainControl:
     ############### KEYBOARD CONTROL FUNCTIONS ###############
 
     def introduce_mission(self, mission):
-        self.speak_with_face("sounds/mission" + str(mission) + "-0.mp3", 'happy', None)
         self.change_image(self.mission_frame, "images/mission" + str(mission) + ".png", mission)
-        time.sleep(12)
+        self.speak_with_face("sounds/mission" + str(mission) + "-0.mp3", 'happy', None)
+        time.sleep(6)
         self.speak_with_face("sounds/mission" + str(mission) + "-1.mp3", 'confused', None)
 
     ### looks at student X and says his/her name ###
@@ -203,10 +203,11 @@ class BrainControl:
 
     def teacher_alert(self):
         self.speak_with_face("sounds/teacheralert1.mp3", 'neutral', None)
+        self.antenna_lights('2')
         self.change_image(self.teamo_frame, "images/teamo.png", self.mission)
         self.change_image(self.hint_frame, "images/teacher-alert.png", self.mission)
         self.speak_with_face("sounds/teacheralert2.mp3", 'confused', None)
-        self.antenna_lights(2)
+        self.antenna_lights('2')
 
     def turn_to_student(self, student):
         positions = {}
