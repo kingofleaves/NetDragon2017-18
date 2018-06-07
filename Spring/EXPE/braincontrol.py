@@ -202,9 +202,6 @@ class BrainControl:
 
     def call_teacher(self):
         self.speak_with_face("sounds/callteacher.mp3", 'confused', None)
-        self.antenna_lights('3')
-        self.loop_antenna('med', 1)
-        self.antenna_lights('1')
 
     def teacher_alert(self):
         self.speak_with_face("sounds/teacheralert1.mp3", 'neutral', None)
@@ -213,7 +210,6 @@ class BrainControl:
         self.change_image(self.teamo_frame, "images/teamo.png", self.mission)
         self.change_image(self.hint_frame, "images/teacher-alert.png", self.mission)
         self.speak_with_face("sounds/teacheralert2.mp3", 'confused', None)
-        self.antenna_lights('1')
 
     def turn_to_student(self, student):
         positions = {}
@@ -267,11 +263,12 @@ class BrainControl:
             self.loop_antenna('fast', 1)
         elif emotion == 'confused':
             self.antenna_lights('1')
-            self.move_antenna(1, 'low')
+            self.move_antenna(1, 'slow')
             self.move_antenna(0, 'med')
         elif emotion == 'curious':
             self.antenna_lights('2')
             self.loop_antenna('med', 1)
+        self.antenna_lights('1')
 
     def call_teacher_helper(self, event):
         self.call_teacher()
