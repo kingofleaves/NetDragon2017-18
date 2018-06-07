@@ -219,18 +219,18 @@ class BrainControl:
             to_change = self.current_pos - positions[student]
 
     def intro(self):
-        self.antenna_lights(1)
+        self.antenna_lights('1')
         self.loop_antenna('med', 2)
         self.speak_with_face("sounds/intro.mp3", 'happy', None)
-        self.antenna_lights(0)
+        self.antenna_lights('0')
 
     def intro_student(self, student):
         self.turn_to_student(student)
-        self.antenna_lights(3)
+        self.antenna_lights('3')
         self.loop_antenna('high', 1)
         self.speak_with_face("sounds/intro", 'happy', 3)
         self.speak(student + ".mp3")
-        self.antenna_lights(0)
+        self.antenna_lights('0')
 
     ############### SUBFUNCTIONS ###############
 
