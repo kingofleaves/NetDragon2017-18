@@ -199,19 +199,18 @@ class BrainControl:
 
     def call_teacher(self):
         self.speak_with_face("sounds/callteacher.mp3", 'confused', None)
+        self.antenna_lights('3')
+        self.loop_antenna('med', 1)
+        self.antenna_lights('1')
 
     def teacher_alert(self):
         self.speak_with_face("sounds/teacheralert1.mp3", 'neutral', None)
         self.antenna_lights('2')
+        self.loop_antenna('fast', 1)
         self.change_image(self.teamo_frame, "images/teamo.png", self.mission)
         self.change_image(self.hint_frame, "images/teacher-alert.png", self.mission)
         self.speak_with_face("sounds/teacheralert2.mp3", 'confused', None)
-        time.sleep(1)
-        self.speak_with_face("sounds/teacheralert2.mp3", 'confused', None)
-        time.sleep(1)
-        self.speak_with_face("sounds/teacheralert2.mp3", 'confused', None)
-        time.sleep(1)
-        self.antenna_lights('0')
+        self.antenna_lights('1')
 
     def turn_to_student(self, student):
         positions = {}
@@ -232,7 +231,6 @@ class BrainControl:
         self.antenna_lights('1')
         self.speak_with_face("sounds/intro.mp3", 'happy', None)
         self.loop_antenna('med', 2)
-        self.antenna_lights('0')
 
     def intro_student(self, student):
         self.turn_to_student(student)
@@ -240,7 +238,7 @@ class BrainControl:
         self.loop_antenna('fast', 1)
         self.speak_with_face("sounds/intro", 'happy', 3)
         self.speak(student + ".mp3")
-        self.antenna_lights('0')
+        self.antenna_lights('1')
 
     ############### SUBFUNCTIONS ###############
 
@@ -300,6 +298,7 @@ class BrainControl:
         os.system('mpg123 -q ' + filename)
 
     def exit(self, event):
+        self.antenna_lights('0')
         self.change_face('neutral')
         self.turn_to_student('center')
         self.parent.destroy()
