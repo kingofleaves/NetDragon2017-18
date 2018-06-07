@@ -84,16 +84,16 @@ class BrainControl:
         self.parent.bind_all("7", self.teacher_alert_helper)
 
         # qwer turns to A, B, C, D and says name #
-        self.parent.bind_all("q", lambda event, student="A" : self.look_student(student))
-        self.parent.bind_all("w", lambda event, student="B" : self.look_student(student))
-        self.parent.bind_all("e", lambda event, student="C" : self.look_student(student))
-        self.parent.bind_all("r", lambda event, student="D" : self.look_student(student))
+        self.parent.bind_all("q", lambda event, student="D" : self.look_student(student))
+        self.parent.bind_all("w", lambda event, student="C" : self.look_student(student))
+        self.parent.bind_all("e", lambda event, student="B" : self.look_student(student))
+        self.parent.bind_all("r", lambda event, student="A" : self.look_student(student))
 
         # asdf says A, B, C, D name #
-        self.parent.bind_all("a", lambda event, filename="A.mp3" : self.speak(filename))
-        self.parent.bind_all("s", lambda event, filename="B.mp3" : self.speak(filename))
-        self.parent.bind_all("d", lambda event, filename="C.mp3" : self.speak(filename))
-        self.parent.bind_all("f", lambda event, filename="D.mp3" : self.speak(filename))
+        self.parent.bind_all("a", lambda event, filename="D.mp3" : self.speak(filename))
+        self.parent.bind_all("s", lambda event, filename="C.mp3" : self.speak(filename))
+        self.parent.bind_all("d", lambda event, filename="B.mp3" : self.speak(filename))
+        self.parent.bind_all("f", lambda event, filename="A.mp3" : self.speak(filename))
 
         # <Tab> turns to center #
         self.parent.bind_all("<Tab>", lambda event, student="center" : self.turn_to_student(student))
@@ -104,10 +104,10 @@ class BrainControl:
 
         # introductions, <F8> to start and then <F9-12> for each student #
         self.parent.bind_all("<F8>", self.intro_helper)
-        self.parent.bind_all("<F9>", lambda event, student="A" : self.intro_student(student))
-        self.parent.bind_all("<F10>", lambda event, student="B" : self.intro_student(student))
-        self.parent.bind_all("<F11>", lambda event, student="C" : self.intro_student(student))
-        self.parent.bind_all("<F12>", lambda event, student="D" : self.intro_student(student))
+        self.parent.bind_all("<F9>", lambda event, student="D" : self.intro_student(student))
+        self.parent.bind_all("<F10>", lambda event, student="C" : self.intro_student(student))
+        self.parent.bind_all("<F11>", lambda event, student="B" : self.intro_student(student))
+        self.parent.bind_all("<F12>", lambda event, student="A" : self.intro_student(student))
 
         ### randomized responses ###
         # , for (S ->) asking for help #
@@ -228,10 +228,10 @@ class BrainControl:
 
     def turn_to_student(self, student):
         positions = {}
-        positions['A'] = -2
-        positions['B'] = -1
-        positions['C'] = 1
-        positions['D'] = 2
+        positions['A'] = 2
+        positions['B'] = 1
+        positions['C'] = -1
+        positions['D'] = -2
         positions['center'] = 0
         to_change = self.current_pos - positions[student]
         while to_change > 0:
