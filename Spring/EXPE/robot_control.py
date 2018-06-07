@@ -35,7 +35,7 @@ GPIO.output(MODE2, RESOLUTION['1/16'])
 # LCD Face setup
 FACE = (12, 16, 6, 5)
 GPIO.setup(FACE, GPIO.OUT)
-#Make emotions dictionary 
+#Make emotions dictionary
 EMOTION = {'neutral':(1,0,0,0),
            'happy': (0,1,0,0),
            'confused': (0,0,1,0),
@@ -54,7 +54,7 @@ def display_emot(input_emot):
 
 def turn(rot_dir):
     "Turns to face the adjacent student on the right"
-    
+
     stepcount = int(SPR*2)
     delay = 0.005/6
     GPIO.output(DIR1, rot_dir)
@@ -67,7 +67,7 @@ def turn(rot_dir):
 
 def flex(rot_dir, speed):
     "Turns to face the adjacent student on the right"
-    
+
     stepcount = int(SPR*6)
     delay = 0.005/(ANT_SPEED[speed])
     GPIO.output(DIR2, rot_dir)
@@ -104,7 +104,7 @@ def LED(mode):
     if len(sys.argv) == 2:
         ser = serial.Serial(sys.argv[1])
         ser.write(mode)
-        
+
 
 
 # ************** Robot Interaction Commands *************** #
@@ -112,13 +112,13 @@ def LED(mode):
 def askRequest():
     display_emot('curious')
     fullFlex('slow')
-    
+
 def listen():
     display_emot('curious')
 
 def processing():
     display_emot('neutral')
-    
+
 
 def acknowledge():
     display_emot('happy')
@@ -133,45 +133,3 @@ def call():
     display_emot('curious')
     fullFlex('fast', 3)
     ## color: orange, flash 3 times, pause, flash again 3 times
-    
-
-
-
-turn(1)
-turn(0)
-
-##turn(1)
-##turn(0)
-##turn(0)
-##turn(1)
-##display_emot('happy')
-##flex(1,'fast')
-##flex(0,'fast')
-##flex(1,'fast')
-##flex(0,'fast')
-##flex(1,'fast')
-##flex(0,'fast')
-##display_emot('neutral')
-##
-##display_emot('happy')
-##flex(1,'fast')
-##flex(0,'fast')
-##flex(1,'fast')
-##flex(0,'fast')
-##flex(1,'fast')
-##flex(0,'fast')
-##display_emot('questioning')
-##flex(1,'med')
-##flex(0,'med')
-##flex(1,'med')
-##flex(0,'med')
-##flex(1,'med')
-##flex(0,'med')
-##display_emot('sad')
-##flex(1,'slow')
-##flex(0,'slow')
-##flex(1,'slow')
-##flex(0,'slow')
-##flex(1,'slow')
-##flex(0,'slow')
-##display_emot('neutral')
