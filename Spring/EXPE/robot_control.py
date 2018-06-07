@@ -55,7 +55,7 @@ def display_emot(input_emot):
 def turn(rot_dir):
     "Turns to face the adjacent student on the right"
 
-    stepcount = int(SPR*2)
+    stepcount = int(SPR)
     delay = 0.005/6
     GPIO.output(DIR1, rot_dir)
     for x in range(stepcount):
