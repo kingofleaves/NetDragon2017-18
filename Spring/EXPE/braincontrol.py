@@ -64,11 +64,11 @@ class BrainControl:
         self.parent.bind_all("<Escape>", self.exit)
 
         # <F1-5> for the different missions #
-        self.parent.bind_all("<F1>", lambda event, frame=self.mission_frame, image="images/mission1.png", mission=1 : self.change_image(frame, image, mission))
-        self.parent.bind_all("<F2>", lambda event, frame=self.mission_frame, image="images/mission2.png", mission=2 : self.change_image(frame, image, mission))
-        self.parent.bind_all("<F3>", lambda event, frame=self.mission_frame, image="images/mission3.png", mission=3 : self.change_image(frame, image, mission))
-        self.parent.bind_all("<F4>", lambda event, frame=self.mission_frame, image="images/mission4.png", mission=4 : self.change_image(frame, image, mission))
-        self.parent.bind_all("<F5>", lambda event, frame=self.mission_frame, image="images/mission5.png", mission=5 : self.change_image(frame, image, mission))
+        self.parent.bind_all("<F1>", lambda event, mission=1 : self.introduce_mission(mission))
+        self.parent.bind_all("<F2>", lambda event, mission=2 : self.introduce_mission(mission))
+        self.parent.bind_all("<F3>", lambda event, mission=3 : self.introduce_mission(mission))
+        self.parent.bind_all("<F4>", lambda event, mission=4 : self.introduce_mission(mission))
+        self.parent.bind_all("<F5>", lambda event, mission=5 : self.introduce_mission(mission))
 
         # `-5 for the hints (0-5) #
         self.parent.bind_all("`", lambda event, new_hint_level=None : self.change_hint(new_hint_level))
@@ -78,26 +78,41 @@ class BrainControl:
         self.parent.bind_all("4", lambda event, new_hint_level=4 : self.change_hint(new_hint_level))
         self.parent.bind_all("5", lambda event, new_hint_level=5 : self.change_hint(new_hint_level))
 
-        # qwer for A, B, C, D names #
+        # 6 for teacher alert #
+        self.parent.bind_all("6", self.call_teacher_helper)
+        self.parent.bind_all("7", self.teacher_alert_helper)
+
+        # qwer turns to A, B, C, D and says name #
         self.parent.bind_all("q", lambda event, student="A" : self.look_student(student))
         self.parent.bind_all("w", lambda event, student="B" : self.look_student(student))
         self.parent.bind_all("e", lambda event, student="C" : self.look_student(student))
         self.parent.bind_all("r", lambda event, student="D" : self.look_student(student))
+
+        # <Tab> turns to center #
         self.parent.bind_all("<Tab>", lambda event, student="center" : self.turn_to_student(student))
+
+        # t/y turns left/right #
+        self.parent.bind_all("t", self.turn_left_helper)
+        self.parent.bind_all("y", self.turn_right_helper)
+
+        # introductions, <F8> to start and then <F9-12> for each student #
+        self.parent.bind_all("<F8>", self.intro_helper)
+        self.parent.bind_all("<F9>", lambda event, student="A" : self.intro_student(student))
+        self.parent.bind_all("<F10>", lambda event, student="B" : self.intro_student(student))
+        self.parent.bind_all("<F11>", lambda event, student="C" : self.intro_student(student))
+        self.parent.bind_all("<F12>", lambda event, student="D" : self.intro_student(student))
 
         ### randomized responses ###
         # / for "yes" #
-        self.parent.bind_all("/", lambda event, filename="sounds/yes-", emotion=None, randomize_max_num=4 : self.speak_with_face(filename, emotion, randomize_max_num))
+        self.parent.bind_all("/", lambda event, filename="sounds/yes-", emotion=None, randomize_max_num=7 : self.speak_with_face(filename, emotion, randomize_max_num))
         # . for "no" #
-        self.parent.bind_all(".", lambda event, filename="sounds/no-", emotion=None, randomize_max_num=4 : self.speak_with_face(filename, emotion, randomize_max_num))
+        self.parent.bind_all(".", lambda event, filename="sounds/no-", emotion=None, randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
 
         ### testing robot ###
         self.parent.bind_all("7", lambda event, emotion='neutral' : self.change_face(emotion))
         self.parent.bind_all("8", lambda event, emotion='happy' : self.change_face(emotion))
         self.parent.bind_all("9", lambda event, emotion='confused' : self.change_face(emotion))
         self.parent.bind_all("0", lambda event, emotion='curious' : self.change_face(emotion))
-        self.parent.bind_all("u", self.turn_left_helper)
-        self.parent.bind_all("i", self.turn_right_helper)
         self.parent.bind_all("j", lambda event, mode='1' : self.antenna_lights(mode))
         self.parent.bind_all("k", lambda event, mode='2' : self.antenna_lights(mode))
         self.parent.bind_all("l", lambda event, mode='3' : self.antenna_lights(mode))
@@ -133,8 +148,14 @@ class BrainControl:
     #     self.mission = "movie"
     #     self.change_hint(3)
     #     self.speak("sounds/S7-1.mp3")
+##############################################################################
 
     ############### KEYBOARD CONTROL FUNCTIONS ###############
+
+    def introduce_mission(self, mission):
+        self.speak_with_face("sounds/mission" + mission + "-0.mp3", 'happy', None)
+        self.change_image(self.mission_frame, "images/mission" + mission + "2.png", mission)
+        self.speak_with_face("sounds/mission" + mission + "-1.mp3", 'confused', None)
 
     ### looks at student X and says his/her name ###
     def look_student(self, student):
@@ -166,29 +187,21 @@ class BrainControl:
             self.change_image(self.teamo_frame, "images/teamo-hint.png", self.mission)
             try:
                 self.change_image(self.hint_frame, "images/hint-" + str(self.mission) + "-" + str(new_hint_level) + ".png", self.mission)
-                self.speak("sounds/hint-" + str(self.mission) + "-" + str(new_hint_level) + ".mp3")
+                if new_hint_level == 5:
+                    self.speak_with_face("sounds/hint-" + str(self.mission) + "-" + str(new_hint_level) + ".mp3", 'happy', None)
+                else:
+                    self.speak_with_face("sounds/hint-" + str(self.mission) + "-" + str(new_hint_level) + ".mp3", 'neutral', None)
             except:
                 self.change_hint(None)
                 return
         self.hint = new_hint_level
 
-    ############### SUBFUNCTIONS ###############
-
-    def antenna_lights(self, mode):
-        ser.write(mode.encode())
-
-    def move_antenna(self, direction, speed):
-        rc.flex(direction, speed)
-
-    def loop_antenna(self, speed, times):
-        rc.fullFlex(speed, times)
-
-    def change_face(self, emotion):
-        rc.display_emot(emotion)
-        # rc.display_emot('neutral')
-        # rc.display_emot('happy')
-        # rc.display_emot('confused')
-        # rc.display_emot('curious')
+    def teacher_alert(self):
+        self.speak_with_face("sounds/teacheralert1.mp3", neutral, None)
+        self.change_image(self.teamo_frame, "images/teamo.png", self.mission)
+        self.change_image(self.hint_frame, "images/teacher-alert.png", self.mission)
+        self.speak_with_face("sounds/teacheralert2.mp3", confused, None)
+        self.antenna_lights(2)
 
     def turn_to_student(self, student):
         positions = {}
@@ -204,6 +217,49 @@ class BrainControl:
         while to_change < 0:
             self.turn_right()
             to_change = self.current_pos - positions[student]
+
+    def intro(self):
+        self.antenna_lights(1)
+        self.loop_antenna('med', 2)
+        self.speak_with_face("sounds/intro.mp3", 'happy', None)
+        self.antenna_lights(0)
+
+    def intro_student(self, student):
+        self.turn_to_student(student)
+        self.antenna_lights(3)
+        self.loop_antenna('high', 1)
+        self.speak_with_face("sounds/intro", 'happy', 3)
+        self.speak(student + ".mp3")
+        self.antenna_lights(0)
+
+    ############### SUBFUNCTIONS ###############
+
+    # mode: '1' = breathing, '2' = single light sweep, '3' = light relay, '0' = off/sleep
+    def antenna_lights(self, mode):
+        ser.write(mode.encode())
+
+    # direction: 1 = down, 0 = up
+    # speed: 'high', 'med', 'low'
+    def move_antenna(self, direction, speed):
+        rc.flex(direction, speed)
+
+    # speed: 'high', 'med', 'low'
+    # number of times to repeat
+    def loop_antenna(self, speed, times):
+        rc.fullFlex(speed, times)
+
+    # emotion: neutral, happy, confused, curious
+    def change_face(self, emotion):
+        rc.display_emot(emotion)
+
+    def call_teacher_helper(self, event):
+        self.call_teacher()
+
+    def intro_helper(self, event):
+        self.intro()
+
+    def teacher_alert_helper(self, event):
+        self.teacher_alert()
 
     def turn_right_helper(self, event):
         self.turn_right()
@@ -231,9 +287,10 @@ class BrainControl:
             self.speak(filename)
 
     def speak(self, filename):
-        os.system('mpg123 -q ' + filename + ' &')
+        os.system('mpg123 -q ' + filename)
 
     def exit(self, event):
+        self.turn_to_student('center')
         self.parent.destroy()
 
 root = tk.Tk()
