@@ -16,6 +16,9 @@ from PIL import ImageTk, Image
 import os
 import random
 import robot_control as rc
+import serial
+
+ser = ""
 
 class BrainControl:
     def __init__(self, parent):
@@ -100,7 +103,7 @@ class BrainControl:
         self.parent.bind_all("o", lambda event, direction=1, speed='fast' : self.move_antenna(direction, speed))
         self.parent.bind_all("p", lambda event, direction=0, speed='fast' : self.move_antenna(direction, speed))
         self.parent.bind_all("[", lambda event, direction=1, speed='slow' : self.move_antenna(direction, speed))
-        self.parent.bind_all("]", lambda event, direction=1, speed='slow' : self.move_antenna(direction, speed))
+        self.parent.bind_all("]", lambda event, direction=0, speed='slow' : self.move_antenna(direction, speed))
         self.parent.bind_all("'", lambda event, speed='med', times=3 : self.loop_antenna(speed, times))
 
 ########################## MOVIE CONTROLS (SPECIAL) ##########################
@@ -170,7 +173,7 @@ class BrainControl:
     ############### SUBFUNCTIONS ###############
 
     def antenna_lights(self, mode):
-        rc.LED(mode)
+        ser.write(mode)
 
     def move_antenna(self, direction, speed):
         rc.flex(direction, speed)
