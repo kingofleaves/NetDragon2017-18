@@ -104,6 +104,9 @@ class BrainControl:
         self.parent.bind_all("<F12>", lambda event, student="D" : self.intro_student(student))
 
         ### randomized responses ###
+        # , for asking for help #
+        self.parent.bind_all(",", lambda event, filename="sounds/ask-", emotion='happy', randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
+
         # / for "yes" #
         self.parent.bind_all("/", lambda event, filename="sounds/yes-", randomize_max_num=7 : self.speak_randomizer(filename, randomize_max_num))
         # . for "no" #
@@ -259,6 +262,16 @@ class BrainControl:
     # emotion: neutral, happy, confused, curious
     def change_face(self, emotion):
         rc.display_emot(emotion)
+        if emotion == 'happy':
+            self.antenna_lights('3')
+            self.loop_antenna('high', 1)
+        elif emotion == 'confused':
+            self.antenna_lights('1')
+            self.move_antenna(1, 'low')
+            self.move_antenna(0, 'medium')
+        elif emotion == 'curious':
+            self.antenna_lights('2')
+            self.loop_antenna('med', 1)
 
     def call_teacher_helper(self, event):
         self.call_teacher()
@@ -298,6 +311,7 @@ class BrainControl:
         os.system('mpg123 -q ' + filename)
 
     def exit(self, event):
+        self.speak_with_face('sounds/goodbye.mp3', 'happy', None)
         self.antenna_lights('0')
         self.change_face('neutral')
         self.turn_to_student('center')
