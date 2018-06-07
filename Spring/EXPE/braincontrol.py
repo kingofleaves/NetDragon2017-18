@@ -197,10 +197,11 @@ class BrainControl:
         positions['D'] = 2
         to_change = self.current_pos - positions[student]
         while to_change > 0:
-            self.turn_right()
+            self.turn_left()
             to_change = self.current_pos - positions[student]
         while to_change < 0:
-            self.turn_left()
+            self.turn_right()
+            to_change = self.current_pos - positions[student]
 
     def turn_right(self):
         rc.turn(1)
