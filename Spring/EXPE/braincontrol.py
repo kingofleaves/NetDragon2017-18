@@ -118,8 +118,8 @@ class BrainControl:
         # . for (S ->) "no" #
         self.parent.bind_all(".", lambda event, filename="sounds/no-", emotion='neutral', randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
 
-        # l for S -> "great job" #
-        self.parent.bind_all("l", lambda event, filename="sounds/great-", emotion='happy', randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
+        # m for S -> "great job" #
+        self.parent.bind_all("m", lambda event, filename="sounds/great-", emotion='happy', randomize_max_num=3 : self.speak_with_face(filename, emotion, randomize_max_num))
 
         # ; for S -> "explain" -> S #
         self.parent.bind_all(";", lambda event, filename="sounds/explainto-", emotion='neutral', randomize_max_num=2 : self.speak_with_face(filename, emotion, randomize_max_num))
