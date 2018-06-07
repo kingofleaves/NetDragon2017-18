@@ -153,9 +153,9 @@ class BrainControl:
     ############### KEYBOARD CONTROL FUNCTIONS ###############
 
     def introduce_mission(self, mission):
-        self.speak_with_face("sounds/mission" + mission + "-0.mp3", 'happy', None)
-        self.change_image(self.mission_frame, "images/mission" + mission + "2.png", mission)
-        self.speak_with_face("sounds/mission" + mission + "-1.mp3", 'confused', None)
+        self.speak_with_face("sounds/mission" + str(mission) + "-0.mp3", 'happy', None)
+        self.change_image(self.mission_frame, "images/mission" + str(mission) + "2.png", mission)
+        self.speak_with_face("sounds/mission" + str(mission) + "-1.mp3", 'confused', None)
 
     ### looks at student X and says his/her name ###
     def look_student(self, student):
@@ -220,8 +220,8 @@ class BrainControl:
 
     def intro(self):
         self.antenna_lights('1')
-        self.loop_antenna('med', 2)
         self.speak_with_face("sounds/intro.mp3", 'happy', None)
+        self.loop_antenna('med', 2)
         self.antenna_lights('0')
 
     def intro_student(self, student):
