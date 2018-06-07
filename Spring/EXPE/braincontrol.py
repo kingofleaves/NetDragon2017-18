@@ -155,8 +155,11 @@ class BrainControl:
 
     def introduce_mission(self, mission):
         self.change_image(self.mission_frame, "images/mission" + str(mission) + ".png", mission)
+        flag = False
+        while not flag:
+            time.sleep(0.5)
+            flag = True
         self.speak_with_face("sounds/mission" + str(mission) + "-0.mp3", 'happy', None)
-        time.sleep(6)
         self.speak_with_face("sounds/mission" + str(mission) + "-1.mp3", 'confused', None)
 
     ### looks at student X and says his/her name ###
