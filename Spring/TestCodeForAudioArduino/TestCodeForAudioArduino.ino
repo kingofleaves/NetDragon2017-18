@@ -38,7 +38,7 @@ void loop() {
   
     // Send average speaking time to RPi
     int speakTime = 0;
-    for (int i = 90; i < BUFFER_SIZE; i++) {
+    for (int i = BUFFER_SIZE - 1; i < BUFFER_SIZE; i++) {
       speakTime += memAudio[i];
     }
     
