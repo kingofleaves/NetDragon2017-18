@@ -28,6 +28,7 @@ class BrainControl:
         self.hint = None
         self.images = {}
         self.labels = {}
+        self.curr_pos = 0
 
         ### generate the window and frames ###
         # fullscreen window #
@@ -94,8 +95,8 @@ class BrainControl:
         self.parent.bind_all("8", lambda event, emotion='happy' : self.change_face(emotion))
         self.parent.bind_all("9", lambda event, emotion='confused' : self.change_face(emotion))
         self.parent.bind_all("0", lambda event, emotion='curious' : self.change_face(emotion))
-        self.parent.bind_all("u", lambda event, direction=0 : self.turn_robot(direction))
-        self.parent.bind_all("i", lambda event, direction=1 : self.turn_robot(direction))
+        self.parent.bind_all("u", self.turn_left)
+        self.parent.bind_all("i", self.turn_right)
         self.parent.bind_all("j", lambda event, mode='1' : self.antenna_lights(mode))
         self.parent.bind_all("k", lambda event, mode='2' : self.antenna_lights(mode))
         self.parent.bind_all("l", lambda event, mode='3' : self.antenna_lights(mode))
@@ -189,12 +190,25 @@ class BrainControl:
         # rc.display_emot('curious')
 
     def turn_to_student(self, student):
-        # rc.turn(0): turn left
-        # rc.turn(1): turn right
-        pass
+        positions = {}
+        positions['A'] = -2
+        positions['B'] = -1
+        positions['C'] = 1
+        positions['D'] = 2
+        to_change = self.current_pos - positions[student]
+        while to_change > 0:
+            self.turn_right()
+            to_change = self.current_pos - positions[student]
+        while to_change < 0:
+            self.turn_left()
 
-    def turn_robot(self, direction):
-        rc.turn(direction)
+    def turn_right(self):
+        rc.turn(1)
+        self.current_pos = self.current_pos + 1
+
+    def turn_left(self):
+        rc.turn(0)
+        self.current_pos = self.current_pos - 1
 
     def speak_randomizer(self, filename, max_num):
         num = random.randint(1, max_num)
